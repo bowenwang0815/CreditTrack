@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "CardPilot",
+    "slug": "cardpilot",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#F3F5F9"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.personal.cardpilot"
+    },
+    "android": {
+      "package": "com.personal.cardpilot"
+    }
+  }
+}
