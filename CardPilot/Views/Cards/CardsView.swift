@@ -2,7 +2,7 @@ import SwiftData
 import SwiftUI
 
 struct CardsView: View {
-    @Query(sort: [SortDescriptor(\Card.isActive, order: .reverse), SortDescriptor(\Card.name)]) private var cards: [Card]
+    @Query(sort: \Card.name, order: .forward) private var cards: [Card]
 
     @State private var isPresentingAddCard = false
 
@@ -23,7 +23,7 @@ struct CardsView: View {
                         }
                         .padding(.horizontal)
 
-                        ForEach(cards) { card in
+                        ForEach(sortedCards) { card in
                             NavigationLink {
                                 CardDetailView(card: card)
                             } label: {
@@ -33,7 +33,7 @@ struct CardsView: View {
                             .padding(.horizontal)
                         }
 
-                        if cards.isEmpty {
+                        if sortedCards.isEmpty {
                             ContentUnavailableView(
                                 "No Cards Yet",
                                 systemImage: "creditcard.trianglebadge.exclamationmark",
@@ -58,6 +58,15 @@ struct CardsView: View {
             .sheet(isPresented: $isPresentingAddCard) {
                 AddCardView()
             }
+        }
+    }
+
+    private var sortedCards: [Card] {
+        cards.sorted { lhs, rhs in
+            if lhs.isActive == rhs.isActive {
+                return lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
+            }
+            return lhs.isActive && !rhs.isActive
         }
     }
 }
