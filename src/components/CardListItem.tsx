@@ -1,12 +1,44 @@
+import { Feather } from "@expo/vector-icons";
 import React from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View, useWindowDimensions } from "react-native";
 import { colors, spacing } from "../theme";
 import { TrackerCard } from "../types";
-import { annualFeeCountdown, formatCurrency } from "../utils/date";
-import { getDisplayName, getKeyRules, getRedeemedValue, getUnusedBenefitsCount } from "../utils/cardHelpers";
+import { annualFeeProgress, daysUntil, formatCurrency } from "../utils/date";
+import {
+  getDisplayName,
+  getKeyRules,
+  getRedeemedValue
+} from "../utils/cardHelpers";
 import { CardThumbnail } from "./CardThumbnail";
-import { CategoryChip } from "./CategoryChip";
-import { Pill } from "./Pill";
+
+function iconForCategory(category: string): keyof typeof Feather.glyphMap {
+  switch (category) {
+    case "dining":
+      return "coffee";
+    case "grocery":
+      return "shopping-cart";
+    case "gas":
+      return "truck";
+    case "travel":
+      return "map-pin";
+    case "flights":
+      return "send";
+    case "hotels":
+      return "home";
+    case "transit":
+      return "truck";
+    case "drugstores":
+      return "heart";
+    case "online_shopping":
+      return "monitor";
+    case "streaming":
+      return "play";
+    case "mobile_wallet":
+      return "smartphone";
+    default:
+      return "star";
+  }
+}
 
 export function CardListItem({
   card,
@@ -15,38 +47,69 @@ export function CardListItem({
   card: TrackerCard;
   onPress: () => void;
 }) {
+  const { width } = useWindowDimensions();
+  const isCompact = width < 440;
+  const remainingDays = daysUntil(card.annualFeeDueDate);
+  const progress = annualFeeProgress(card.annualFeeDueDate);
+  const topRules = getKeyRules(card).slice(0, isCompact ? 4 : 5);
+
   return (
-    <Pressable onPress={onPress} style={styles.card}>
-      <View style={styles.topRow}>
-        <CardThumbnail card={card} />
-        <View style={styles.info}>
+    <Pressable onPress={onPress} style={[styles.card, isCompact && styles.cardCompact]}>
+      <View style={[styles.row, isCompact && styles.rowCompact]}>
+        <CardThumbnail card={card} compact={isCompact} />
+
+        <View style={styles.content}>
           <View style={styles.titleRow}>
-            <View style={styles.titleGroup}>
-              <Text style={styles.name}>{getDisplayName(card)}</Text>
-              <Text style={styles.issuer}>{card.issuer}</Text>
+            <Text numberOfLines={1} style={[styles.name, isCompact && styles.nameCompact]}>
+              {getDisplayName(card)}
+            </Text>
+            <View style={[styles.feePill, isCompact && styles.feePillCompact]}>
+              <Text style={[styles.feePillText, isCompact && styles.feePillTextCompact]}>
+                {formatCurrency(card.annualFee)}
+              </Text>
             </View>
-            <Pill
-              label={card.annualFee === 0 ? "No fee" : `${formatCurrency(card.annualFee)} AF`}
-              tone={card.annualFee === 0 ? "success" : "warning"}
-            />
           </View>
-          {card.last4 ? <Text style={styles.meta}>Ending in {card.last4}</Text> : null}
-          <Text style={styles.redeemed}>
-            {formatCurrency(getRedeemedValue(card))} redeemed this cycle
-          </Text>
-          <Text style={styles.meta}>
-            {annualFeeCountdown(card.annualFeeDueDate)} • {getUnusedBenefitsCount(card)} unused
-          </Text>
+
+          <View style={[styles.dueRow, isCompact && styles.dueRowCompact]}>
+            <Text style={[styles.supportingLabel, isCompact && styles.supportingLabelCompact]}>
+              Annual fee due
+            </Text>
+            <Text style={[styles.daysText, isCompact && styles.daysTextCompact]}>
+              {remainingDays <= 0 ? "Due now" : `${remainingDays} days remaining`}
+            </Text>
+          </View>
+
+          <View style={[styles.progressTrack, isCompact && styles.progressTrackCompact]}>
+            <View style={[styles.progressFill, { width: `${Math.max(progress * 100, 4)}%` }]} />
+          </View>
+
+          <View style={[styles.bottomRow, isCompact && styles.bottomRowCompact]}>
+            <View style={styles.redeemedBlock}>
+              <Text style={[styles.supportingLabel, isCompact && styles.supportingLabelCompact]}>
+                Benefits redeemed
+              </Text>
+              <Text style={[styles.redeemedValue, isCompact && styles.redeemedValueCompact]}>
+                {formatCurrency(getRedeemedValue(card))}
+              </Text>
+            </View>
+
+            <View style={[styles.multiplierRow, isCompact && styles.multiplierRowCompact]}>
+              {topRules.map((rule) => (
+                <View key={rule.id} style={styles.multiplierItem}>
+                  <Feather
+                    color={colors.icon}
+                    name={iconForCategory(rule.category)}
+                    size={isCompact ? 20 : 24}
+                  />
+                  <Text numberOfLines={1} style={[styles.multiplierText, isCompact && styles.multiplierTextCompact]}>
+                    {rule.multiplier}x
+                  </Text>
+                </View>
+              ))}
+            </View>
+          </View>
         </View>
       </View>
-
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <View style={styles.chips}>
-          {getKeyRules(card).map((rule) => (
-            <CategoryChip key={rule.id} rule={rule} />
-          ))}
-        </View>
-      </ScrollView>
     </Pressable>
   );
 }
@@ -54,52 +117,156 @@ export function CardListItem({
 const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.surface,
-    borderRadius: 26,
-    padding: spacing.lg,
-    shadowColor: "#000000",
-    shadowOpacity: 0.06,
+    borderRadius: 28,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "#DFE6F1",
+    shadowColor: "#7B8BA8",
+    shadowOpacity: 0.18,
     shadowRadius: 18,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 2
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 5
   },
-  topRow: {
+  cardCompact: {
+    padding: 14
+  },
+  row: {
     flexDirection: "row",
-    gap: 14
+    gap: 12
   },
-  info: {
-    flex: 1
+  rowCompact: {
+    gap: 10
+  },
+  content: {
+    flex: 1,
+    justifyContent: "space-between"
   },
   titleRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    gap: 8
-  },
-  titleGroup: {
-    flex: 1
+    alignItems: "center",
+    gap: 10
   },
   name: {
-    fontSize: 17,
+    flex: 1,
+    fontSize: 18,
+    lineHeight: 22,
     fontWeight: "700",
     color: colors.textPrimary
   },
-  issuer: {
-    marginTop: 4,
-    fontSize: 14,
-    color: colors.textSecondary
+  nameCompact: {
+    fontSize: 15,
+    lineHeight: 18
   },
-  meta: {
-    marginTop: 6,
-    fontSize: 12,
-    color: colors.textSecondary
+  feePill: {
+    backgroundColor: "#E8F0FF",
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 7
   },
-  redeemed: {
-    marginTop: 8,
+  feePillCompact: {
+    paddingHorizontal: 9,
+    paddingVertical: 5
+  },
+  feePillText: {
+    color: colors.primary,
     fontSize: 14,
+    fontWeight: "700"
+  },
+  feePillTextCompact: {
+    fontSize: 12
+  },
+  dueRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 12,
+    gap: 8
+  },
+  dueRowCompact: {
+    alignItems: "center"
+  },
+  supportingLabel: {
+    fontSize: 13,
+    color: "#7082A0"
+  },
+  supportingLabelCompact: {
+    fontSize: 11,
+    lineHeight: 13,
+    flexShrink: 1
+  },
+  daysText: {
+    fontSize: 13,
     fontWeight: "600",
     color: colors.textPrimary
   },
-  chips: {
+  daysTextCompact: {
+    fontSize: 10,
+    lineHeight: 12
+  },
+  progressTrack: {
+    marginTop: 10,
+    height: 10,
+    borderRadius: 999,
+    backgroundColor: "#E8EDF6",
+    overflow: "hidden"
+  },
+  progressTrackCompact: {
+    marginTop: 8,
+    height: 8
+  },
+  progressFill: {
+    height: "100%",
+    borderRadius: 999,
+    backgroundColor: colors.primary
+  },
+  bottomRow: {
     flexDirection: "row",
-    marginTop: spacing.md
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+    gap: 8,
+    marginTop: 14
+  },
+  bottomRowCompact: {
+    marginTop: 12,
+    gap: 6
+  },
+  redeemedBlock: {
+    minWidth: 96,
+    paddingRight: 4
+  },
+  redeemedValue: {
+    marginTop: 4,
+    fontSize: 16,
+    fontWeight: "700",
+    color: colors.textPrimary
+  },
+  redeemedValueCompact: {
+    fontSize: 13,
+    marginTop: 3
+  },
+  multiplierRow: {
+    flexShrink: 1,
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "flex-start",
+    gap: 10
+  },
+  multiplierRowCompact: {
+    gap: 6
+  },
+  multiplierItem: {
+    alignItems: "center",
+    minWidth: 26
+  },
+  multiplierText: {
+    marginTop: 4,
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#7082A0"
+  },
+  multiplierTextCompact: {
+    fontSize: 11,
+    marginTop: 3
   }
 });

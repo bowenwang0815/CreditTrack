@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { Feather } from "@expo/vector-icons";
 import {
   Modal,
   Pressable,
@@ -7,7 +8,8 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  View
+  View,
+  useWindowDimensions
 } from "react-native";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { AddCardModal } from "./src/components/AddCardModal";
@@ -15,6 +17,7 @@ import { BenefitListItem } from "./src/components/BenefitListItem";
 import { CardDetailModal } from "./src/components/CardDetailModal";
 import { CardListItem } from "./src/components/CardListItem";
 import { BestCardRow } from "./src/components/BestCardRow";
+import { DashboardView } from "./src/components/DashboardView";
 import { useCardStore } from "./src/hooks/useCardStore";
 import { SpendingCategory, TabKey } from "./src/types";
 import { colors, spacing } from "./src/theme";
@@ -33,16 +36,18 @@ const recommendationCategories: SpendingCategory[] = [
 ];
 
 export default function App() {
+  const { width } = useWindowDimensions();
+  const isCompact = width < 440;
   const {
     cards,
     ready,
     addCardFromTemplate,
     markBenefitUsed,
     resetBenefit,
-    archiveCard
+    deleteCard
   } = useCardStore();
 
-  const [activeTab, setActiveTab] = useState<TabKey>("cards");
+  const [activeTab, setActiveTab] = useState<TabKey>("dashboard");
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
@@ -89,48 +94,36 @@ export default function App() {
       <StatusBar barStyle="dark-content" />
 
       <View style={styles.appShell}>
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.title}>CardPilot</Text>
-            <Text style={styles.subtitle}>
-              Track fees, credits, and the best card for every swipe.
-            </Text>
-          </View>
-
-          {activeTab === "cards" ? (
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => setIsAddModalOpen(true)}
-              style={styles.addButton}
-            >
-              <Text style={styles.addButtonText}>+ Add</Text>
-            </Pressable>
-          ) : null}
-        </View>
-
-        <View style={styles.tabBar}>
-          {[
-            ["cards", "Cards"],
-            ["best", "Best Card"],
-            ["benefits", "Benefits"],
-            ["settings", "Settings"]
-          ].map(([key, label]) => {
-            const isActive = activeTab === key;
-            return (
+        {activeTab === "cards" ? (
+          <View style={[styles.cardsHeader, isCompact && styles.cardsHeaderCompact]}>
+            <Text style={[styles.cardsTitle, isCompact && styles.cardsTitleCompact]}>My Cards</Text>
+            <View style={styles.cardsHeaderActions}>
               <Pressable
-                key={key}
-                onPress={() => setActiveTab(key as TabKey)}
-                style={[styles.tabButton, isActive && styles.tabButtonActive]}
+                accessibilityRole="button"
+                onPress={() => console.log("[CardsHeader] menu pressed")}
+                style={[styles.iconButtonGhost, isCompact && styles.iconButtonGhostCompact]}
               >
-                <Text
-                  style={[styles.tabButtonText, isActive && styles.tabButtonTextActive]}
-                >
-                  {label}
-                </Text>
+                <Feather color={colors.icon} name="menu" size={isCompact ? 24 : 28} />
               </Pressable>
-            );
-          })}
-        </View>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => setIsAddModalOpen(true)}
+                style={[styles.floatingAddButton, isCompact && styles.floatingAddButtonCompact]}
+              >
+                <Feather color={colors.textSecondary} name="plus" size={isCompact ? 24 : 28} />
+              </Pressable>
+            </View>
+          </View>
+        ) : (
+          <View style={styles.header}>
+            <View>
+              <Text style={styles.title}>CardPilot</Text>
+              <Text style={styles.subtitle}>
+                Track fees, credits, and the best card for every swipe.
+              </Text>
+            </View>
+          </View>
+        )}
 
         {!ready ? (
           <View style={styles.loadingState}>
@@ -141,9 +134,11 @@ export default function App() {
           </View>
         ) : (
           <ScrollView
-            contentContainerStyle={styles.scrollContent}
+            contentContainerStyle={[styles.scrollContent, isCompact && styles.scrollContentCompact]}
             showsVerticalScrollIndicator={false}
           >
+            {activeTab === "dashboard" ? <DashboardView cards={cards} /> : null}
+
             {activeTab === "cards" ? (
               <>
                 {activeCards.map((card) => (
@@ -211,6 +206,54 @@ export default function App() {
             ) : null}
           </ScrollView>
         )}
+
+        <View style={styles.bottomTabBar}>
+          {[
+            ["dashboard", "Home"],
+            ["cards", "Cards"],
+            ["best", "Best"],
+            ["benefits", "Benefits"],
+            ["settings", "Settings"]
+          ].map(([key, label]) => {
+            const isActive = activeTab === key;
+            const iconName =
+              key === "dashboard"
+                ? "home"
+                : key === "cards"
+                  ? "credit-card"
+                  : key === "best"
+                    ? "award"
+                    : key === "benefits"
+                      ? "gift"
+                      : "more-horizontal";
+            return (
+              <Pressable
+                key={key}
+                onPress={() => {
+                  console.log("[BottomNav] pressed:", key);
+                  setActiveTab(key as TabKey);
+                }}
+                style={styles.bottomTabButton}
+              >
+                <View style={styles.bottomTabPill}>
+                  <Feather
+                    color={isActive ? colors.primary : colors.icon}
+                    name={iconName as keyof typeof Feather.glyphMap}
+                    size={23}
+                  />
+                  <Text
+                    style={[
+                      styles.bottomTabText,
+                      isActive && styles.bottomTabTextActive
+                    ]}
+                  >
+                    {label}
+                  </Text>
+                </View>
+              </Pressable>
+            );
+          })}
+        </View>
       </View>
 
       <Modal
@@ -238,8 +281,8 @@ export default function App() {
           <CardDetailModal
             card={selectedCard}
             onClose={() => setSelectedCardId(null)}
-            onArchive={() => {
-              archiveCard(selectedCard.id);
+            onDelete={() => {
+              deleteCard(selectedCard.id);
               setSelectedCardId(null);
             }}
             onMarkBenefitUsed={(benefitId) => markBenefitUsed(selectedCard.id, benefitId)}
@@ -261,12 +304,64 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.md,
     paddingBottom: spacing.md
+  },
+  cardsHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 22,
+    paddingTop: 18,
+    paddingBottom: 22
+  },
+  cardsHeaderCompact: {
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 18
+  },
+  cardsTitle: {
+    fontSize: 38,
+    fontWeight: "800",
+    color: colors.textPrimary
+  },
+  cardsTitleCompact: {
+    fontSize: 28
+  },
+  cardsHeaderActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10
+  },
+  iconButtonGhost: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  iconButtonGhostCompact: {
+    width: 40,
+    height: 40
+  },
+  floatingAddButton: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: "#F4F6FB",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#8090AE",
+    shadowOpacity: 0.24,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 7
+  },
+  floatingAddButtonCompact: {
+    width: 56,
+    height: 56,
+    borderRadius: 28
   },
   title: {
     fontSize: 30,
@@ -291,35 +386,14 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 14
   },
-  tabBar: {
-    flexDirection: "row",
-    marginHorizontal: spacing.lg,
-    marginBottom: spacing.md,
-    backgroundColor: "#E9EDF5",
-    borderRadius: 18,
-    padding: 4
-  },
-  tabButton: {
-    flex: 1,
-    paddingVertical: 10,
-    borderRadius: 14
-  },
-  tabButtonActive: {
-    backgroundColor: "#FFFFFF"
-  },
-  tabButtonText: {
-    textAlign: "center",
-    color: colors.textSecondary,
-    fontSize: 13,
-    fontWeight: "600"
-  },
-  tabButtonTextActive: {
-    color: colors.textPrimary
-  },
   scrollContent: {
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.xxl,
+    paddingHorizontal: 18,
+    paddingBottom: 128,
     gap: spacing.md
+  },
+  scrollContentCompact: {
+    paddingHorizontal: 12,
+    gap: 12
   },
   loadingState: {
     marginHorizontal: spacing.lg,
@@ -371,5 +445,41 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 22,
     color: colors.textSecondary
+  },
+  bottomTabBar: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    flexDirection: "row",
+    backgroundColor: "#FFFFFF",
+    borderTopWidth: 1,
+    borderTopColor: "#E4E8F1",
+    paddingHorizontal: 10,
+    paddingTop: 10,
+    paddingBottom: 22,
+    shadowColor: "#7B8BA8",
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: -2 },
+    elevation: 6
+  },
+  bottomTabButton: {
+    flex: 1
+  },
+  bottomTabPill: {
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    minHeight: 52
+  },
+  bottomTabText: {
+    textAlign: "center",
+    fontSize: 11,
+    fontWeight: "700",
+    color: colors.icon
+  },
+  bottomTabTextActive: {
+    color: colors.primary
   }
 });

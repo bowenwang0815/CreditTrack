@@ -114,10 +114,8 @@ export function useCardStore() {
     }));
   }
 
-  function archiveCard(cardId: string) {
-    setCards((current) =>
-      current.map((card) => (card.id === cardId ? { ...card, isActive: false } : card))
-    );
+  function deleteCard(cardId: string) {
+    setCards((current) => current.filter((card) => card.id !== cardId));
   }
 
   return {
@@ -126,6 +124,6 @@ export function useCardStore() {
     addCardFromTemplate,
     markBenefitUsed,
     resetBenefit,
-    archiveCard
+    deleteCard
   };
 }

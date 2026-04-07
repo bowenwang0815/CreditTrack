@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { colors, spacing } from "../theme";
 import { TrackerCard } from "../types";
@@ -11,16 +11,19 @@ import { Pill } from "./Pill";
 export function CardDetailModal({
   card,
   onClose,
-  onArchive,
+  onDelete,
   onMarkBenefitUsed,
   onResetBenefit
 }: {
   card: TrackerCard;
   onClose: () => void;
-  onArchive: () => void;
+  onDelete: () => void;
   onMarkBenefitUsed: (benefitId: string) => void;
   onResetBenefit: (benefitId: string) => void;
 }) {
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showFinalDeleteConfirm, setShowFinalDeleteConfirm] = useState(false);
+
   return (
     <View style={styles.screen}>
       <View style={styles.topBar}>
@@ -28,8 +31,8 @@ export function CardDetailModal({
           <Text style={styles.topButton}>Close</Text>
         </Pressable>
         <Text style={styles.topTitle}>{card.name}</Text>
-        <Pressable onPress={onArchive}>
-          <Text style={styles.topButton}>Archive</Text>
+        <Pressable onPress={() => setShowDeleteConfirm(true)}>
+          <Text style={styles.deleteButton}>Delete</Text>
         </Pressable>
       </View>
 
@@ -101,6 +104,59 @@ export function CardDetailModal({
           </View>
         ) : null}
       </ScrollView>
+
+      {showDeleteConfirm ? (
+        <View style={styles.overlay}>
+          <View style={styles.confirmCard}>
+            <Text style={styles.confirmTitle}>Delete this card?</Text>
+            <Text style={styles.confirmBody}>
+              Remove {card.name} from CardPilot? This will remove it from your card list.
+            </Text>
+            <View style={styles.confirmActions}>
+              <Pressable
+                onPress={() => setShowDeleteConfirm(false)}
+                style={styles.confirmCancelButton}
+              >
+                <Text style={styles.confirmCancelText}>Cancel</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  setShowDeleteConfirm(false);
+                  setShowFinalDeleteConfirm(true);
+                }}
+                style={styles.confirmDeleteButton}
+              >
+                <Text style={styles.confirmDeleteText}>Continue</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      ) : null}
+
+      {showFinalDeleteConfirm ? (
+        <View style={styles.overlay}>
+          <View style={styles.confirmCard}>
+            <Text style={styles.confirmTitle}>Final confirmation</Text>
+            <Text style={styles.confirmBody}>
+              Are you sure you want to permanently delete {card.name}?
+            </Text>
+            <View style={styles.confirmActions}>
+              <Pressable
+                onPress={() => setShowFinalDeleteConfirm(false)}
+                style={styles.confirmCancelButton}
+              >
+                <Text style={styles.confirmCancelText}>No</Text>
+              </Pressable>
+              <Pressable
+                onPress={onDelete}
+                style={styles.confirmDeleteButton}
+              >
+                <Text style={styles.confirmDeleteText}>Delete card</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -122,6 +178,11 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "600",
     color: colors.primary
+  },
+  deleteButton: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#D92D20"
   },
   topTitle: {
     fontSize: 17,
@@ -220,5 +281,55 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 22,
     color: colors.textSecondary
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(10, 19, 40, 0.28)",
+    justifyContent: "center",
+    padding: spacing.lg
+  },
+  confirmCard: {
+    backgroundColor: colors.surface,
+    borderRadius: 24,
+    padding: spacing.xl
+  },
+  confirmTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: colors.textPrimary
+  },
+  confirmBody: {
+    marginTop: 10,
+    fontSize: 14,
+    lineHeight: 21,
+    color: colors.textSecondary
+  },
+  confirmActions: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: 12,
+    marginTop: spacing.lg
+  },
+  confirmCancelButton: {
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 14,
+    backgroundColor: "#EEF2F7"
+  },
+  confirmCancelText: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: colors.textPrimary
+  },
+  confirmDeleteButton: {
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 14,
+    backgroundColor: "#FEE4E2"
+  },
+  confirmDeleteText: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#D92D20"
   }
 });

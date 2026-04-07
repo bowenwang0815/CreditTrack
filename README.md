@@ -21,6 +21,7 @@ npm start
 - Android Emulator with `a`
 - Expo Go by scanning the QR code
 
+
 ## Current MVP
 
 - Cards tab with all cards in one place

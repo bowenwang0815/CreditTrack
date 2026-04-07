@@ -1,7 +1,7 @@
 export const colors = {
-  background: "#F3F5F9",
+  background: "#F7F9FD",
   surface: "#FFFFFF",
-  textPrimary: "#111827",
+  textPrimary: "#0A1328",
   textSecondary: "#6B7280",
   primary: "#2B63F6",
   border: "#E5E7EB",
@@ -9,7 +9,8 @@ export const colors = {
   successSoft: "#DFF7EA",
   warning: "#C06B12",
   warningSoft: "#FDEBD5",
-  blueSoft: "#E3ECFF"
+  blueSoft: "#E3ECFF",
+  icon: "#7486A4"
 };
 
 export const spacing = {

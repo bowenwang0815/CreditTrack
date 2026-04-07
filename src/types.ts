@@ -14,7 +14,7 @@ export type SpendingCategory =
 
 export type BenefitType = "monthly" | "quarterly" | "semiannual" | "annual" | "one_time";
 export type RewardCurrencyType = "points" | "miles" | "cash_back" | "hotel_points";
-export type TabKey = "cards" | "best" | "benefits" | "settings";
+export type TabKey = "dashboard" | "cards" | "best" | "benefits" | "settings";
 
 export interface EarningRule {
   id: string;
@@ -47,6 +47,8 @@ export interface TrackerCard {
   annualFeeDueDate: string;
   openDate?: string;
   colorHex: string;
+  imageUrl?: string;
+  imageAssetKey?: string;
   isActive: boolean;
   rewardCurrencyType: RewardCurrencyType;
   notes?: string;
