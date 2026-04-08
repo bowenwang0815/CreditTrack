@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "web": {
-      "output": "static"
+      "output": "single"
     },
     "splash": {
       "backgroundColor": "#F3F5F9"
