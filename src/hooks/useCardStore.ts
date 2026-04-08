@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
-import { cardTemplates, makeInitialCards } from "../data/sampleCards";
+import { cardTemplates } from "../data/sampleCards";
 import { AddCardPayload, Benefit, TrackerCard } from "../types";
 
 const STORAGE_KEY = "cardpilot.cards.v1";
@@ -26,11 +26,11 @@ export function useCardStore() {
         if (stored) {
           setCards(JSON.parse(stored) as TrackerCard[]);
         } else {
-          setCards(makeInitialCards());
+          setCards([]);
         }
       } catch {
         if (mounted) {
-          setCards(makeInitialCards());
+          setCards([]);
         }
       } finally {
         if (mounted) {
@@ -118,12 +118,18 @@ export function useCardStore() {
     setCards((current) => current.filter((card) => card.id !== cardId));
   }
 
+  async function resetAllCards() {
+    setCards([]);
+    await AsyncStorage.removeItem(STORAGE_KEY).catch(() => undefined);
+  }
+
   return {
     cards,
     ready,
     addCardFromTemplate,
     markBenefitUsed,
     resetBenefit,
-    deleteCard
+    deleteCard,
+    resetAllCards
   };
 }

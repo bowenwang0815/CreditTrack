@@ -44,7 +44,8 @@ export default function App() {
     addCardFromTemplate,
     markBenefitUsed,
     resetBenefit,
-    deleteCard
+    deleteCard,
+    resetAllCards
   } = useCardStore();
 
   const [activeTab, setActiveTab] = useState<TabKey>("dashboard");
@@ -196,12 +197,29 @@ export default function App() {
               <View style={styles.settingsCard}>
                 <Text style={styles.sectionTitle}>Local-first setup</Text>
                 <Text style={styles.settingsText}>
-                  Your cards and benefits are stored only on this device with AsyncStorage.
+                  New users start with an empty wallet. Cards you add are stored only on this
+                  device or browser with AsyncStorage, so they stay after refreshes and reopenings.
                 </Text>
+                <Text style={styles.sectionTitle}>Reset local data</Text>
+                <Text style={styles.settingsText}>
+                  Need a clean slate? This clears every saved card and benefit from this device.
+                </Text>
+                <Pressable
+                  onPress={() => {
+                    resetAllCards().catch(() => undefined);
+                    setSelectedCardId(null);
+                    setIsAddModalOpen(false);
+                    setActiveTab("cards");
+                  }}
+                  style={styles.resetButton}
+                >
+                  <Text style={styles.resetButtonText}>Clear all local cards</Text>
+                </Pressable>
                 <Text style={styles.sectionTitle}>What&apos;s next</Text>
                 <Text style={styles.settingsText}>
                   Local reminders and smarter value tracking are the next best upgrades for this personal-use version.
                 </Text>
+                <Text style={styles.madeBy}>Made by Bowen with a heart</Text>
               </View>
             ) : null}
           </ScrollView>
@@ -444,6 +462,24 @@ const styles = StyleSheet.create({
   settingsText: {
     fontSize: 14,
     lineHeight: 22,
+    color: colors.textSecondary
+  },
+  resetButton: {
+    alignSelf: "flex-start",
+    marginTop: 2,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 16,
+    backgroundColor: "#FEE4E2"
+  },
+  resetButtonText: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#D92D20"
+  },
+  madeBy: {
+    marginTop: spacing.md,
+    fontSize: 13,
     color: colors.textSecondary
   },
   bottomTabBar: {
