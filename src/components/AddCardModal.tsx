@@ -30,6 +30,7 @@ export function AddCardModal({
   const [selectedIssuer, setSelectedIssuer] = useState(issuers[0] ?? "");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTemplateId, setSelectedTemplateId] = useState("");
+  const [isTemplateDetailsOpen, setIsTemplateDetailsOpen] = useState(false);
   const [last4, setLast4] = useState("");
   const [creditLimit, setCreditLimit] = useState("");
   const [approvedMonthIndex, setApprovedMonthIndex] = useState(new Date().getMonth());
@@ -104,6 +105,22 @@ export function AddCardModal({
     }
   }, [approvedDay, approvedMonthIndex, approvedYear]);
 
+  function handleSaveSelectedTemplate() {
+    if (!selectedTemplateId) {
+      return;
+    }
+
+    const approvedDateIso = buildDateIso(approvedYear, approvedMonthIndex, approvedDay);
+
+    onSave({
+      templateId: selectedTemplateId,
+      last4,
+      creditLimit: creditLimit.trim() ? Number(creditLimit.replace(/[^0-9]/g, "")) || undefined : undefined,
+      openDate: approvedDateIso,
+      annualFeeDueDate: approvedDateIso
+    });
+  }
+
   return (
     <View style={styles.screen}>
       <View style={styles.topBar}>
@@ -111,28 +128,7 @@ export function AddCardModal({
           <Text style={styles.topButton}>Cancel</Text>
         </Pressable>
         <Text style={styles.topTitle}>Add Card</Text>
-        <Pressable
-          disabled={!selectedTemplateId}
-          onPress={() => {
-            if (!selectedTemplateId) {
-              return;
-            }
-
-            const approvedDateIso = buildDateIso(approvedYear, approvedMonthIndex, approvedDay);
-
-            onSave({
-              templateId: selectedTemplateId,
-              last4,
-              creditLimit: creditLimit.trim() ? Number(creditLimit.replace(/[^0-9]/g, "")) || undefined : undefined,
-              openDate: approvedDateIso,
-              annualFeeDueDate: approvedDateIso
-            });
-          }}
-        >
-          <Text style={[styles.topButton, !selectedTemplateId && styles.topButtonDisabled]}>
-            Save
-          </Text>
-        </Pressable>
+        <View style={styles.topBarSpacer} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
@@ -189,7 +185,10 @@ export function AddCardModal({
               return (
                 <Pressable
                   key={template.id}
-                  onPress={() => setSelectedTemplateId(template.id)}
+                  onPress={() => {
+                    setSelectedTemplateId(template.id);
+                    setIsTemplateDetailsOpen(true);
+                  }}
                   style={[styles.templateButton, isSelected && styles.templateButtonSelected]}
                 >
                   {hasImage ? <CardThumbnail card={template} compact /> : null}
@@ -209,127 +208,148 @@ export function AddCardModal({
             ) : null}
           </View>
         </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Card details</Text>
-          <Text style={styles.fieldLabel}>Last 4 digits</Text>
-          <TextInput
-            value={last4}
-            onChangeText={setLast4}
-            keyboardType="number-pad"
-            maxLength={4}
-            placeholder="1234"
-            placeholderTextColor="#9CA3AF"
-            style={styles.input}
-          />
-
-          <Text style={styles.fieldLabel}>Approved date</Text>
-          <View style={styles.dateSummaryCard}>
-            <Text style={styles.dateSummaryText}>
-              {monthLabels[approvedMonthIndex]} {approvedDay}, {approvedYear}
-            </Text>
-            <Text style={styles.dateSummaryHint}>
-              Annual fee due date will match this approved date each year.
-            </Text>
-          </View>
-
-          <View style={styles.dateWheelRow}>
-            <View style={styles.dateWheelColumn}>
-              <Text style={styles.wheelLabel}>Month</Text>
-              <ScrollView showsVerticalScrollIndicator={false} style={styles.wheelList}>
-                {monthLabels.map((month, index) => {
-                  const isSelected = approvedMonthIndex === index;
-                  return (
-                    <Pressable
-                      key={month}
-                      onPress={() => setApprovedMonthIndex(index)}
-                      style={[styles.wheelItem, isSelected && styles.wheelItemSelected]}
-                    >
-                      <Text style={[styles.wheelItemText, isSelected && styles.wheelItemTextSelected]}>
-                        {month}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </ScrollView>
-            </View>
-
-            <View style={styles.dateWheelColumn}>
-              <Text style={styles.wheelLabel}>Day</Text>
-              <ScrollView showsVerticalScrollIndicator={false} style={styles.wheelList}>
-                {dayOptions.map((day) => {
-                  const isSelected = approvedDay === day;
-                  return (
-                    <Pressable
-                      key={day}
-                      onPress={() => setApprovedDay(day)}
-                      style={[styles.wheelItem, isSelected && styles.wheelItemSelected]}
-                    >
-                      <Text style={[styles.wheelItemText, isSelected && styles.wheelItemTextSelected]}>
-                        {day}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </ScrollView>
-            </View>
-
-            <View style={styles.dateWheelColumn}>
-              <Text style={styles.wheelLabel}>Year</Text>
-              <ScrollView showsVerticalScrollIndicator={false} style={styles.wheelList}>
-                {yearOptions.map((year) => {
-                  const isSelected = approvedYear === year;
-                  return (
-                    <Pressable
-                      key={year}
-                      onPress={() => setApprovedYear(year)}
-                      style={[styles.wheelItem, isSelected && styles.wheelItemSelected]}
-                    >
-                      <Text style={[styles.wheelItemText, isSelected && styles.wheelItemTextSelected]}>
-                        {year}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </ScrollView>
-            </View>
-          </View>
-
-          <Text style={styles.fieldLabel}>Credit limit (optional)</Text>
-          <TextInput
-            value={creditLimit}
-            onChangeText={setCreditLimit}
-            keyboardType="number-pad"
-            placeholder="$10,000"
-            placeholderTextColor="#9CA3AF"
-            style={styles.input}
-          />
-        </View>
-
-        {selectedTemplate ? (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Template preview</Text>
-            <Text style={styles.previewName}>{selectedTemplate.name}</Text>
-            <Text style={styles.previewMeta}>
-              {selectedTemplate.issuer}
-            </Text>
-            <Text style={styles.previewMeta}>
-              {selectedTemplate.earningRules
-                .slice(0, 3)
-                .map((rule) => `${rule.multiplier}x ${rule.category}`)
-                .join(" • ")}
-            </Text>
-            {selectedTemplate.benefits.length > 0 ? (
-              <Text style={styles.previewMeta}>
-                {selectedTemplate.benefits
-                  .slice(0, 3)
-                  .map((benefit) => benefit.name)
-                  .join(" • ")}
-              </Text>
-            ) : null}
-          </View>
-        ) : null}
       </ScrollView>
+
+      {isTemplateDetailsOpen && selectedTemplate ? (
+        <View style={styles.overlay}>
+          <View style={styles.sheetCard}>
+            <View style={styles.sheetTopBar}>
+              <Text style={styles.sheetTitle}>Card details</Text>
+              <Pressable onPress={() => setIsTemplateDetailsOpen(false)}>
+                <Text style={styles.sheetClose}>Done</Text>
+              </Pressable>
+            </View>
+
+            <ScrollView
+              contentContainerStyle={styles.sheetContent}
+              showsVerticalScrollIndicator={false}
+            >
+              <View style={styles.sheetHero}>
+                <CardThumbnail card={selectedTemplate} />
+                <View style={styles.sheetHeroText}>
+                  <Text style={styles.previewName}>{selectedTemplate.name}</Text>
+                  <Text style={styles.previewMeta}>{selectedTemplate.issuer}</Text>
+                  <Text style={styles.previewMeta}>
+                    {selectedTemplate.earningRules
+                      .slice(0, 3)
+                      .map((rule) => `${rule.multiplier}x ${rule.category}`)
+                      .join(" • ")}
+                  </Text>
+                </View>
+              </View>
+
+              {selectedTemplate.benefits.length > 0 ? (
+                <View style={styles.previewBlock}>
+                  <Text style={styles.previewBlockLabel}>Highlighted benefits</Text>
+                  <Text style={styles.previewMeta}>
+                    {selectedTemplate.benefits
+                      .slice(0, 3)
+                      .map((benefit) => benefit.name)
+                      .join(" • ")}
+                  </Text>
+                </View>
+              ) : null}
+
+              <Text style={styles.fieldLabel}>Last 4 digits</Text>
+              <TextInput
+                value={last4}
+                onChangeText={setLast4}
+                keyboardType="number-pad"
+                maxLength={4}
+                placeholder="1234"
+                placeholderTextColor="#9CA3AF"
+                style={styles.input}
+              />
+
+              <Text style={styles.fieldLabel}>Approved date</Text>
+              <View style={styles.dateSummaryCard}>
+                <Text style={styles.dateSummaryText}>
+                  {monthLabels[approvedMonthIndex]} {approvedDay}, {approvedYear}
+                </Text>
+                <Text style={styles.dateSummaryHint}>
+                  Annual fee due date will match this approved date each year.
+                </Text>
+              </View>
+
+              <View style={styles.dateWheelRow}>
+                <View style={styles.dateWheelColumn}>
+                  <Text style={styles.wheelLabel}>Month</Text>
+                  <ScrollView showsVerticalScrollIndicator={false} style={styles.wheelList}>
+                    {monthLabels.map((month, index) => {
+                      const isSelected = approvedMonthIndex === index;
+                      return (
+                        <Pressable
+                          key={month}
+                          onPress={() => setApprovedMonthIndex(index)}
+                          style={[styles.wheelItem, isSelected && styles.wheelItemSelected]}
+                        >
+                          <Text style={[styles.wheelItemText, isSelected && styles.wheelItemTextSelected]}>
+                            {month}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </ScrollView>
+                </View>
+
+                <View style={styles.dateWheelColumn}>
+                  <Text style={styles.wheelLabel}>Day</Text>
+                  <ScrollView showsVerticalScrollIndicator={false} style={styles.wheelList}>
+                    {dayOptions.map((day) => {
+                      const isSelected = approvedDay === day;
+                      return (
+                        <Pressable
+                          key={day}
+                          onPress={() => setApprovedDay(day)}
+                          style={[styles.wheelItem, isSelected && styles.wheelItemSelected]}
+                        >
+                          <Text style={[styles.wheelItemText, isSelected && styles.wheelItemTextSelected]}>
+                            {day}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </ScrollView>
+                </View>
+
+                <View style={styles.dateWheelColumn}>
+                  <Text style={styles.wheelLabel}>Year</Text>
+                  <ScrollView showsVerticalScrollIndicator={false} style={styles.wheelList}>
+                    {yearOptions.map((year) => {
+                      const isSelected = approvedYear === year;
+                      return (
+                        <Pressable
+                          key={year}
+                          onPress={() => setApprovedYear(year)}
+                          style={[styles.wheelItem, isSelected && styles.wheelItemSelected]}
+                        >
+                          <Text style={[styles.wheelItemText, isSelected && styles.wheelItemTextSelected]}>
+                            {year}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </ScrollView>
+                </View>
+              </View>
+
+              <Text style={styles.fieldLabel}>Credit limit (optional)</Text>
+              <TextInput
+                value={creditLimit}
+                onChangeText={setCreditLimit}
+                keyboardType="number-pad"
+                placeholder="$10,000"
+                placeholderTextColor="#9CA3AF"
+                style={styles.input}
+              />
+
+              <Pressable onPress={handleSaveSelectedTemplate} style={styles.addCardButton}>
+                <Text style={styles.addCardButtonText}>Add card</Text>
+              </Pressable>
+            </ScrollView>
+          </View>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -354,6 +374,9 @@ const styles = StyleSheet.create({
   },
   topButtonDisabled: {
     color: "#A7B1C6"
+  },
+  topBarSpacer: {
+    width: 44
   },
   topTitle: {
     fontSize: 17,
@@ -514,6 +537,73 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     marginTop: 14
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(10, 19, 40, 0.28)",
+    justifyContent: "flex-end"
+  },
+  sheetCard: {
+    backgroundColor: colors.surface,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    maxHeight: "88%",
+    paddingTop: spacing.lg
+  },
+  sheetTopBar: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.md
+  },
+  sheetTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: colors.textPrimary
+  },
+  sheetClose: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: colors.primary
+  },
+  sheetContent: {
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.xxl
+  },
+  sheetHero: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+    marginBottom: spacing.md
+  },
+  sheetHeroText: {
+    flex: 1
+  },
+  previewBlock: {
+    marginBottom: spacing.md,
+    padding: spacing.md,
+    borderRadius: 16,
+    backgroundColor: colors.background
+  },
+  previewBlockLabel: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: colors.textPrimary,
+    marginBottom: 4
+  },
+  addCardButton: {
+    marginTop: spacing.lg,
+    borderRadius: 18,
+    backgroundColor: colors.primary,
+    paddingVertical: 15,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  addCardButtonText: {
+    color: "#FFFFFF",
+    fontSize: 15,
+    fontWeight: "700"
   },
   previewName: {
     marginTop: 12,
