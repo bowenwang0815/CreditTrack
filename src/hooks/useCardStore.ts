@@ -9,6 +9,61 @@ function makeLocalId(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
+function normalizeText(value?: string) {
+  return (value ?? "").trim().toLowerCase();
+}
+
+function findTemplateForStoredCard(card: TrackerCard) {
+  return cardTemplates.find((template) => {
+    if (card.imageAssetKey && template.imageAssetKey) {
+      return card.imageAssetKey === template.imageAssetKey;
+    }
+
+    return (
+      normalizeText(template.issuer) === normalizeText(card.issuer) &&
+      normalizeText(template.name) === normalizeText(card.name)
+    );
+  });
+}
+
+function mergeStoredCardWithTemplate(card: TrackerCard): TrackerCard {
+  const template = findTemplateForStoredCard(card);
+  if (!template) {
+    return card;
+  }
+
+  const existingBenefitsByName = new Map(
+    card.benefits.map((benefit) => [normalizeText(benefit.name), benefit])
+  );
+
+  return {
+    ...template,
+    id: card.id,
+    nickname: card.nickname,
+    last4: card.last4,
+    creditLimit: card.creditLimit,
+    openDate: card.openDate,
+    annualFeeDueDate: card.annualFeeDueDate,
+    imageUrl: card.imageUrl ?? template.imageUrl,
+    isActive: card.isActive,
+    earningRules: template.earningRules.map((rule) => ({
+      ...rule,
+      id: makeLocalId("rule")
+    })),
+    benefits: template.benefits.map((benefit) => {
+      const existing = existingBenefitsByName.get(normalizeText(benefit.name));
+
+      return {
+        ...benefit,
+        id: existing?.id ?? makeLocalId("benefit"),
+        lastUsedDate: existing?.lastUsedDate,
+        amountUsedThisPeriod: existing?.amountUsedThisPeriod ?? 0,
+        isUsed: existing?.isUsed ?? false
+      };
+    })
+  };
+}
+
 export function useCardStore() {
   const [cards, setCards] = useState<TrackerCard[]>([]);
   const [ready, setReady] = useState(false);
@@ -24,7 +79,8 @@ export function useCardStore() {
         }
 
         if (stored) {
-          setCards(JSON.parse(stored) as TrackerCard[]);
+          const parsed = JSON.parse(stored) as TrackerCard[];
+          setCards(parsed.map(mergeStoredCardWithTemplate));
         } else {
           setCards([]);
         }
