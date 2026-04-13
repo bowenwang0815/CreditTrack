@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { AddCardModal } from "./src/components/AddCardModal";
-import { BenefitListItem } from "./src/components/BenefitListItem";
+import { BenefitsView } from "./src/components/BenefitsView";
 import { CardDetailModal } from "./src/components/CardDetailModal";
 import { CardListItem } from "./src/components/CardListItem";
 import { BestCardRow } from "./src/components/BestCardRow";
@@ -51,18 +51,6 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<TabKey>("dashboard");
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
-  const unusedBenefits = useMemo(
-    () =>
-      cards
-        .flatMap((card) =>
-          card.benefits
-            .filter((benefit) => !benefit.isUsed)
-            .map((benefit) => ({ benefit, card }))
-        )
-        .sort((left, right) => left.card.name.localeCompare(right.card.name)),
-    [cards]
-  );
 
   const recommendations = useMemo(
     () =>
@@ -173,24 +161,11 @@ export default function App() {
             ) : null}
 
             {activeTab === "benefits" ? (
-              <>
-                {unusedBenefits.map(({ benefit, card }) => (
-                  <BenefitListItem
-                    key={benefit.id}
-                    benefit={benefit}
-                    cardName={card.name}
-                    onMarkUsed={() => markBenefitUsed(card.id, benefit.id)}
-                  />
-                ))}
-                {unusedBenefits.length === 0 ? (
-                  <View style={styles.emptyCard}>
-                    <Text style={styles.emptyTitle}>All benefits used</Text>
-                    <Text style={styles.emptySubtitle}>
-                      Nice work. When a new cycle starts, reset a benefit from the card detail view.
-                    </Text>
-                  </View>
-                ) : null}
-              </>
+              <BenefitsView
+                cards={activeCards}
+                onMarkBenefitUsed={markBenefitUsed}
+                onResetBenefit={resetBenefit}
+              />
             ) : null}
 
             {activeTab === "settings" ? (
