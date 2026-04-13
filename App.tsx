@@ -164,8 +164,6 @@ export default function App() {
             {activeTab === "benefits" ? (
               <BenefitsView
                 cards={activeCards}
-                onMarkBenefitUsed={markBenefitUsed}
-                onResetBenefit={resetBenefit}
                 onUpdateBenefitUsage={updateBenefitUsage}
               />
             ) : null}

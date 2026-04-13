@@ -9,15 +9,11 @@ import { CardThumbnail } from "./CardThumbnail";
 export function BenefitListItem({
   benefit,
   card,
-  onPress,
-  onMarkUsed,
-  onReset
+  onPress
 }: {
   benefit: Benefit;
   card: TrackerCard;
   onPress: () => void;
-  onMarkUsed: () => void;
-  onReset: () => void;
 }) {
   const remainingAmount = Math.max(benefit.amountTotalThisPeriod - benefit.amountUsedThisPeriod, 0);
   const progress =
@@ -35,7 +31,7 @@ export function BenefitListItem({
             <Text numberOfLines={1} style={styles.name}>
               {benefit.name}
             </Text>
-            <Feather color="#98A2B3" name="star" size={18} />
+            <Feather color="#98A2B3" name="chevron-right" size={20} />
           </View>
           <Text style={styles.meta}>{card.name}</Text>
           <Text style={styles.valueLine}>
@@ -53,24 +49,6 @@ export function BenefitListItem({
         <Text style={[styles.statusText, benefit.isUsed ? styles.statusUsed : styles.statusOpen]}>
           {benefit.isUsed ? "Used" : remainingAmount > 0 ? `${formatCurrency(remainingAmount)} left` : "Not used"}
         </Text>
-      </View>
-
-      <View style={styles.actionRow}>
-        <Pressable
-          onPress={(event) => {
-            event.stopPropagation();
-            if (benefit.isUsed) {
-              onReset();
-              return;
-            }
-            onMarkUsed();
-          }}
-          style={[styles.actionButton, benefit.isUsed && styles.actionButtonSecondary]}
-        >
-          <Text style={[styles.actionText, benefit.isUsed && styles.actionTextSecondary]}>
-            {benefit.isUsed ? "Reset" : "Mark used"}
-          </Text>
-        </Pressable>
       </View>
     </Pressable>
   );
@@ -151,28 +129,6 @@ const styles = StyleSheet.create({
     color: colors.primary
   },
   statusUsed: {
-    color: colors.success
-  },
-  actionRow: {
-    marginTop: 14,
-    flexDirection: "row",
-    justifyContent: "flex-start"
-  },
-  actionButton: {
-    backgroundColor: colors.primary,
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    paddingVertical: 10
-  },
-  actionButtonSecondary: {
-    backgroundColor: "#EAF7F0"
-  },
-  actionText: {
-    color: "#FFFFFF",
-    fontSize: 13,
-    fontWeight: "700"
-  },
-  actionTextSecondary: {
     color: colors.success
   }
 });

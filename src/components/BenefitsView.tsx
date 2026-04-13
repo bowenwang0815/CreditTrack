@@ -15,13 +15,9 @@ type BenefitEntry = {
 
 export function BenefitsView({
   cards,
-  onMarkBenefitUsed,
-  onResetBenefit,
   onUpdateBenefitUsage
 }: {
   cards: TrackerCard[];
-  onMarkBenefitUsed: (cardId: string, benefitId: string) => void;
-  onResetBenefit: (cardId: string, benefitId: string) => void;
   onUpdateBenefitUsage: (cardId: string, benefitId: string, amountUsed: number) => void;
 }) {
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
@@ -112,8 +108,6 @@ export function BenefitsView({
             benefit={entry.benefit}
             card={entry.card}
             onPress={() => setSelectedBenefitKey(`${entry.card.id}:${entry.benefitId}`)}
-            onMarkUsed={() => onMarkBenefitUsed(entry.card.id, entry.benefitId)}
-            onReset={() => onResetBenefit(entry.card.id, entry.benefitId)}
           />
         ))
       ) : (
