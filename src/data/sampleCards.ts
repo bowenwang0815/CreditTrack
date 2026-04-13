@@ -42,10 +42,10 @@ const featuredTemplates: TrackerCard[] = [
     rewardCurrencyType: "points",
     notes: "Primary travel card for premium travel and dining.",
     earningRules: [
-      { id: makeId("rule"), category: "travel", multiplier: 3 },
+      { id: makeId("rule"), category: "flights", multiplier: 8, notes: "Flights booked through Chase Travel" },
+      { id: makeId("rule"), category: "hotels", multiplier: 8, notes: "Hotels booked through Chase Travel" },
+      { id: makeId("rule"), category: "travel", multiplier: 4, notes: "Direct airline and hotel bookings" },
       { id: makeId("rule"), category: "dining", multiplier: 3 },
-      { id: makeId("rule"), category: "flights", multiplier: 3 },
-      { id: makeId("rule"), category: "hotels", multiplier: 3 },
       { id: makeId("rule"), category: "everything_else", multiplier: 1 }
     ],
     benefits: [
@@ -61,6 +61,30 @@ const featuredTemplates: TrackerCard[] = [
         amountTotalThisPeriod: 300,
         isUsed: true,
         reminderDaysBefore: 30
+      },
+      {
+        id: makeId("benefit"),
+        name: "The Edit Hotel Credit",
+        type: "annual",
+        valueAmount: 500,
+        category: "hotels",
+        expirationRule: "Annual prepaid bookings through The Edit",
+        amountUsedThisPeriod: 0,
+        amountTotalThisPeriod: 500,
+        isUsed: false,
+        reminderDaysBefore: 30
+      },
+      {
+        id: makeId("benefit"),
+        name: "Global Entry / TSA PreCheck / NEXUS Credit",
+        type: "one_time",
+        valueAmount: 120,
+        category: "travel",
+        expirationRule: "Every 4 years",
+        amountUsedThisPeriod: 0,
+        amountTotalThisPeriod: 120,
+        isUsed: false,
+        reminderDaysBefore: 45
       },
       {
         id: makeId("benefit"),
@@ -92,7 +116,6 @@ const featuredTemplates: TrackerCard[] = [
     earningRules: [
       { id: makeId("rule"), category: "flights", multiplier: 5 },
       { id: makeId("rule"), category: "hotels", multiplier: 5, notes: "Prepaid Amex Travel hotels" },
-      { id: makeId("rule"), category: "travel", multiplier: 5 },
       { id: makeId("rule"), category: "everything_else", multiplier: 1 }
     ],
     benefits: [
@@ -110,13 +133,25 @@ const featuredTemplates: TrackerCard[] = [
       },
       {
         id: makeId("benefit"),
+        name: "Hotel Credit",
+        type: "semiannual",
+        valueAmount: 300,
+        category: "hotels",
+        expirationRule: "Up to $300 semiannually on eligible prepaid Amex Travel hotel bookings",
+        amountUsedThisPeriod: 0,
+        amountTotalThisPeriod: 300,
+        isUsed: false,
+        reminderDaysBefore: 21
+      },
+      {
+        id: makeId("benefit"),
         name: "Digital Entertainment Credit",
         type: "monthly",
-        valueAmount: 20,
+        valueAmount: 25,
         category: "streaming",
         expirationRule: "Expires monthly",
         amountUsedThisPeriod: 0,
-        amountTotalThisPeriod: 20,
+        amountTotalThisPeriod: 25,
         isUsed: false,
         reminderDaysBefore: 5
       },
@@ -131,6 +166,41 @@ const featuredTemplates: TrackerCard[] = [
         amountTotalThisPeriod: 15,
         isUsed: true,
         reminderDaysBefore: 3
+      },
+      {
+        id: makeId("benefit"),
+        name: "Uber One Credit",
+        type: "monthly",
+        valueAmount: 10,
+        category: "travel",
+        expirationRule: "Monthly with eligible auto-renewing membership",
+        amountUsedThisPeriod: 0,
+        amountTotalThisPeriod: 10,
+        isUsed: false,
+        reminderDaysBefore: 5
+      },
+      {
+        id: makeId("benefit"),
+        name: "Resy Credit",
+        type: "quarterly",
+        valueAmount: 100,
+        category: "dining",
+        expirationRule: "Up to $100 per quarter at eligible U.S. Resy restaurants",
+        amountUsedThisPeriod: 0,
+        amountTotalThisPeriod: 100,
+        isUsed: false,
+        reminderDaysBefore: 14
+      },
+      {
+        id: makeId("benefit"),
+        name: "Saks Fifth Avenue Credit",
+        type: "semiannual",
+        valueAmount: 50,
+        expirationRule: "Up to $50 January to June and $50 July to December",
+        amountUsedThisPeriod: 0,
+        amountTotalThisPeriod: 50,
+        isUsed: false,
+        reminderDaysBefore: 14
       }
     ]
   }),
@@ -160,7 +230,7 @@ const featuredTemplates: TrackerCard[] = [
         type: "monthly",
         valueAmount: 10,
         category: "dining",
-        expirationRule: "Expires monthly",
+        expirationRule: "Up to $10 monthly at eligible dining partners",
         amountUsedThisPeriod: 10,
         amountTotalThisPeriod: 10,
         isUsed: true,
@@ -180,15 +250,27 @@ const featuredTemplates: TrackerCard[] = [
       },
       {
         id: makeId("benefit"),
-        name: "Resy Credit",
+        name: "Dunkin' Credit",
         type: "monthly",
-        valueAmount: 10,
+        valueAmount: 7,
         category: "dining",
-        expirationRule: "Expires monthly",
+        expirationRule: "Up to $7 monthly at U.S. Dunkin' locations",
         amountUsedThisPeriod: 0,
-        amountTotalThisPeriod: 10,
+        amountTotalThisPeriod: 7,
         isUsed: false,
         reminderDaysBefore: 5
+      },
+      {
+        id: makeId("benefit"),
+        name: "Resy Credit",
+        type: "semiannual",
+        valueAmount: 50,
+        category: "dining",
+        expirationRule: "Up to $50 January to June and $50 July to December at eligible U.S. Resy restaurants",
+        amountUsedThisPeriod: 0,
+        amountTotalThisPeriod: 50,
+        isUsed: false,
+        reminderDaysBefore: 14
       }
     ]
   }),
@@ -222,6 +304,18 @@ const featuredTemplates: TrackerCard[] = [
         amountTotalThisPeriod: 75,
         isUsed: false,
         reminderDaysBefore: 10
+      },
+      {
+        id: makeId("benefit"),
+        name: "Lyft Credit",
+        type: "monthly",
+        valueAmount: 10,
+        category: "transit",
+        expirationRule: "Monthly when eligible Lyft benefit is active",
+        amountUsedThisPeriod: 0,
+        amountTotalThisPeriod: 10,
+        isUsed: false,
+        reminderDaysBefore: 5
       }
     ]
   }),
@@ -252,7 +346,7 @@ const featuredTemplates: TrackerCard[] = [
         type: "semiannual",
         valueAmount: 200,
         category: "hotels",
-        expirationRule: "Twice per calendar year",
+        expirationRule: "Up to $200 January to June and $200 July to December at participating Hilton Resorts",
         amountUsedThisPeriod: 0,
         amountTotalThisPeriod: 200,
         isUsed: false,
@@ -264,11 +358,35 @@ const featuredTemplates: TrackerCard[] = [
         type: "quarterly",
         valueAmount: 50,
         category: "flights",
-        expirationRule: "Quarterly",
+        expirationRule: "Up to $50 per quarter on flights booked directly with airlines or through Amex Travel",
         amountUsedThisPeriod: 0,
         amountTotalThisPeriod: 50,
         isUsed: false,
         reminderDaysBefore: 10
+      },
+      {
+        id: makeId("benefit"),
+        name: "CLEAR Plus Credit",
+        type: "annual",
+        valueAmount: 209,
+        category: "travel",
+        expirationRule: "Calendar year",
+        amountUsedThisPeriod: 0,
+        amountTotalThisPeriod: 209,
+        isUsed: false,
+        reminderDaysBefore: 30
+      },
+      {
+        id: makeId("benefit"),
+        name: "Waldorf Astoria / Conrad Property Credit",
+        type: "annual",
+        valueAmount: 100,
+        category: "hotels",
+        expirationRule: "Qualifying two-night minimum booking at eligible properties",
+        amountUsedThisPeriod: 0,
+        amountTotalThisPeriod: 100,
+        isUsed: false,
+        reminderDaysBefore: 30
       }
     ]
   }),
@@ -287,8 +405,7 @@ const featuredTemplates: TrackerCard[] = [
     notes: "Simple catch-all for uncategorized spending.",
     earningRules: [
       { id: makeId("rule"), category: "everything_else", multiplier: 3 },
-      { id: makeId("rule"), category: "mobile_wallet", multiplier: 3 },
-      { id: makeId("rule"), category: "online_shopping", multiplier: 3 }
+      { id: makeId("rule"), category: "travel", multiplier: 5, notes: "Travel booked through the Robinhood travel portal" }
     ],
     benefits: [
       {
@@ -513,6 +630,18 @@ const expandedTemplates: TrackerCard[] = [
         amountTotalThisPeriod: 100,
         isUsed: false,
         reminderDaysBefore: 30
+      },
+      {
+        id: makeId("benefit"),
+        name: "Experience Credit",
+        type: "annual",
+        valueAmount: 50,
+        category: "travel",
+        expirationRule: "Up to $50 at Capital One Dining, Entertainment, or Premier Collection stays when eligible",
+        amountUsedThisPeriod: 0,
+        amountTotalThisPeriod: 50,
+        isUsed: false,
+        reminderDaysBefore: 21
       }
     ]
   }),
@@ -550,11 +679,23 @@ const expandedTemplates: TrackerCard[] = [
         name: "Anniversary Miles Bonus",
         type: "annual",
         valueAmount: 100,
-        expirationRule: "Every card anniversary",
+        expirationRule: "10,000 bonus miles every card anniversary",
         amountUsedThisPeriod: 0,
         amountTotalThisPeriod: 100,
         isUsed: false,
         reminderDaysBefore: 21
+      },
+      {
+        id: makeId("benefit"),
+        name: "Global Entry / TSA PreCheck Credit",
+        type: "one_time",
+        valueAmount: 120,
+        category: "travel",
+        expirationRule: "Every 4 years",
+        amountUsedThisPeriod: 0,
+        amountTotalThisPeriod: 120,
+        isUsed: false,
+        reminderDaysBefore: 45
       }
     ]
   }),
@@ -708,11 +849,23 @@ const expandedTemplates: TrackerCard[] = [
         type: "annual",
         valueAmount: 50,
         category: "hotels",
-        expirationRule: "Cardmember year",
+        expirationRule: "Annual hotel credit on eligible Chase Travel hotel stays",
         amountUsedThisPeriod: 0,
         amountTotalThisPeriod: 50,
         isUsed: false,
         reminderDaysBefore: 20
+      },
+      {
+        id: makeId("benefit"),
+        name: "DoorDash Monthly Promo",
+        type: "monthly",
+        valueAmount: 10,
+        category: "dining",
+        expirationRule: "Monthly eligible DoorDash savings when active",
+        amountUsedThisPeriod: 0,
+        amountTotalThisPeriod: 10,
+        isUsed: false,
+        reminderDaysBefore: 5
       }
     ]
   }),
