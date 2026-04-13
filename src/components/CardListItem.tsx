@@ -29,7 +29,7 @@ function iconForCategory(category: string): keyof typeof MaterialIcons.glyphMap 
     case "flights":
       return "flight";
     case "hotels":
-      return "hotel";
+      return "king-bed";
     case "transit":
       return "directions-transit";
     case "drugstores":

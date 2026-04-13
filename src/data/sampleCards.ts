@@ -499,7 +499,7 @@ const expandedTemplates: TrackerCard[] = [
     rewardCurrencyType: "miles",
     notes: "Everyday travel card with simple miles earning.",
     earningRules: [
-      { id: makeId("rule"), category: "travel", multiplier: 5, notes: "Hotels and rental cars through Capital One Travel" },
+      { id: makeId("rule"), category: "hotels", multiplier: 5, notes: "Hotels and rental cars through Capital One Travel" },
       { id: makeId("rule"), category: "everything_else", multiplier: 2 }
     ],
     benefits: [
@@ -528,7 +528,7 @@ const expandedTemplates: TrackerCard[] = [
     rewardCurrencyType: "miles",
     notes: "Premium Capital One travel card with lounge access and annual travel credit.",
     earningRules: [
-      { id: makeId("rule"), category: "travel", multiplier: 10, notes: "Hotels and rental cars through Capital One Travel" },
+      { id: makeId("rule"), category: "hotels", multiplier: 10, notes: "Hotels and rental cars through Capital One Travel" },
       { id: makeId("rule"), category: "flights", multiplier: 5, notes: "Flights through Capital One Travel" },
       { id: makeId("rule"), category: "everything_else", multiplier: 2 }
     ],
@@ -641,7 +641,7 @@ const expandedTemplates: TrackerCard[] = [
     rewardCurrencyType: "miles",
     notes: "Entry travel miles card with no annual fee.",
     earningRules: [
-      { id: makeId("rule"), category: "travel", multiplier: 5, notes: "Hotels and rental cars through Capital One Travel" },
+      { id: makeId("rule"), category: "hotels", multiplier: 5, notes: "Hotels and rental cars through Capital One Travel" },
       { id: makeId("rule"), category: "everything_else", multiplier: 1.25 }
     ],
     benefits: []
