@@ -212,6 +212,7 @@ export function AddCardModal({
 
       {isTemplateDetailsOpen && selectedTemplate ? (
         <View style={styles.overlay}>
+          <Pressable style={styles.overlayBackdrop} onPress={() => setIsTemplateDetailsOpen(false)} />
           <View style={styles.sheetCard}>
             <View style={styles.sheetTopBar}>
               <Text style={styles.sheetTitle}>Card details</Text>
@@ -542,6 +543,9 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(10, 19, 40, 0.28)",
     justifyContent: "flex-end"
+  },
+  overlayBackdrop: {
+    ...StyleSheet.absoluteFillObject
   },
   sheetCard: {
     backgroundColor: colors.surface,
