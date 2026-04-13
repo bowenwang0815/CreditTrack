@@ -76,6 +76,7 @@ export function AddCardModal({
     () => cardTemplates.find((template) => template.id === selectedTemplateId),
     [selectedTemplateId]
   );
+  const selectedTemplateRequiresFeeDate = (selectedTemplate?.annualFee ?? 0) > 0;
 
   useEffect(() => {
     if (!selectedIssuer && issuers[0]) {
@@ -111,13 +112,15 @@ export function AddCardModal({
     }
 
     const approvedDateIso = buildDateIso(approvedYear, approvedMonthIndex, approvedDay);
+    const openDate = selectedTemplateRequiresFeeDate ? approvedDateIso : "";
+    const annualFeeDueDate = selectedTemplateRequiresFeeDate ? approvedDateIso : "";
 
     onSave({
       templateId: selectedTemplateId,
       last4,
       creditLimit: creditLimit.trim() ? Number(creditLimit.replace(/[^0-9]/g, "")) || undefined : undefined,
-      openDate: approvedDateIso,
-      annualFeeDueDate: approvedDateIso
+      openDate,
+      annualFeeDueDate
     });
   }
 
@@ -262,77 +265,88 @@ export function AddCardModal({
                 style={styles.input}
               />
 
-              <Text style={styles.fieldLabel}>Approved date</Text>
-              <View style={styles.dateSummaryCard}>
-                <Text style={styles.dateSummaryText}>
-                  {monthLabels[approvedMonthIndex]} {approvedDay}, {approvedYear}
-                </Text>
-                <Text style={styles.dateSummaryHint}>
-                  Annual fee due date will match this approved date each year.
-                </Text>
-              </View>
+              {selectedTemplateRequiresFeeDate ? (
+                <>
+                  <Text style={styles.fieldLabel}>Approved date</Text>
+                  <View style={styles.dateSummaryCard}>
+                    <Text style={styles.dateSummaryText}>
+                      {monthLabels[approvedMonthIndex]} {approvedDay}, {approvedYear}
+                    </Text>
+                    <Text style={styles.dateSummaryHint}>
+                      Annual fee due date will match this approved date each year.
+                    </Text>
+                  </View>
 
-              <View style={styles.dateWheelRow}>
-                <View style={styles.dateWheelColumn}>
-                  <Text style={styles.wheelLabel}>Month</Text>
-                  <ScrollView showsVerticalScrollIndicator={false} style={styles.wheelList}>
-                    {monthLabels.map((month, index) => {
-                      const isSelected = approvedMonthIndex === index;
-                      return (
-                        <Pressable
-                          key={month}
-                          onPress={() => setApprovedMonthIndex(index)}
-                          style={[styles.wheelItem, isSelected && styles.wheelItemSelected]}
-                        >
-                          <Text style={[styles.wheelItemText, isSelected && styles.wheelItemTextSelected]}>
-                            {month}
-                          </Text>
-                        </Pressable>
-                      );
-                    })}
-                  </ScrollView>
-                </View>
+                  <View style={styles.dateWheelRow}>
+                    <View style={styles.dateWheelColumn}>
+                      <Text style={styles.wheelLabel}>Month</Text>
+                      <ScrollView showsVerticalScrollIndicator={false} style={styles.wheelList}>
+                        {monthLabels.map((month, index) => {
+                          const isSelected = approvedMonthIndex === index;
+                          return (
+                            <Pressable
+                              key={month}
+                              onPress={() => setApprovedMonthIndex(index)}
+                              style={[styles.wheelItem, isSelected && styles.wheelItemSelected]}
+                            >
+                              <Text style={[styles.wheelItemText, isSelected && styles.wheelItemTextSelected]}>
+                                {month}
+                              </Text>
+                            </Pressable>
+                          );
+                        })}
+                      </ScrollView>
+                    </View>
 
-                <View style={styles.dateWheelColumn}>
-                  <Text style={styles.wheelLabel}>Day</Text>
-                  <ScrollView showsVerticalScrollIndicator={false} style={styles.wheelList}>
-                    {dayOptions.map((day) => {
-                      const isSelected = approvedDay === day;
-                      return (
-                        <Pressable
-                          key={day}
-                          onPress={() => setApprovedDay(day)}
-                          style={[styles.wheelItem, isSelected && styles.wheelItemSelected]}
-                        >
-                          <Text style={[styles.wheelItemText, isSelected && styles.wheelItemTextSelected]}>
-                            {day}
-                          </Text>
-                        </Pressable>
-                      );
-                    })}
-                  </ScrollView>
-                </View>
+                    <View style={styles.dateWheelColumn}>
+                      <Text style={styles.wheelLabel}>Day</Text>
+                      <ScrollView showsVerticalScrollIndicator={false} style={styles.wheelList}>
+                        {dayOptions.map((day) => {
+                          const isSelected = approvedDay === day;
+                          return (
+                            <Pressable
+                              key={day}
+                              onPress={() => setApprovedDay(day)}
+                              style={[styles.wheelItem, isSelected && styles.wheelItemSelected]}
+                            >
+                              <Text style={[styles.wheelItemText, isSelected && styles.wheelItemTextSelected]}>
+                                {day}
+                              </Text>
+                            </Pressable>
+                          );
+                        })}
+                      </ScrollView>
+                    </View>
 
-                <View style={styles.dateWheelColumn}>
-                  <Text style={styles.wheelLabel}>Year</Text>
-                  <ScrollView showsVerticalScrollIndicator={false} style={styles.wheelList}>
-                    {yearOptions.map((year) => {
-                      const isSelected = approvedYear === year;
-                      return (
-                        <Pressable
-                          key={year}
-                          onPress={() => setApprovedYear(year)}
-                          style={[styles.wheelItem, isSelected && styles.wheelItemSelected]}
-                        >
-                          <Text style={[styles.wheelItemText, isSelected && styles.wheelItemTextSelected]}>
-                            {year}
-                          </Text>
-                        </Pressable>
-                      );
-                    })}
-                  </ScrollView>
+                    <View style={styles.dateWheelColumn}>
+                      <Text style={styles.wheelLabel}>Year</Text>
+                      <ScrollView showsVerticalScrollIndicator={false} style={styles.wheelList}>
+                        {yearOptions.map((year) => {
+                          const isSelected = approvedYear === year;
+                          return (
+                            <Pressable
+                              key={year}
+                              onPress={() => setApprovedYear(year)}
+                              style={[styles.wheelItem, isSelected && styles.wheelItemSelected]}
+                            >
+                              <Text style={[styles.wheelItemText, isSelected && styles.wheelItemTextSelected]}>
+                                {year}
+                              </Text>
+                            </Pressable>
+                          );
+                        })}
+                      </ScrollView>
+                    </View>
+                  </View>
+                </>
+              ) : (
+                <View style={styles.noFeeNotice}>
+                  <Text style={styles.noFeeNoticeTitle}>No annual fee</Text>
+                  <Text style={styles.noFeeNoticeText}>
+                    This card does not need an approved date for annual fee tracking.
+                  </Text>
                 </View>
-              </View>
+              )}
 
               <Text style={styles.fieldLabel}>Credit limit (optional)</Text>
               <TextInput
@@ -595,6 +609,23 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: colors.textPrimary,
     marginBottom: 4
+  },
+  noFeeNotice: {
+    marginTop: spacing.sm,
+    padding: spacing.md,
+    borderRadius: 16,
+    backgroundColor: "#EAF7F0"
+  },
+  noFeeNoticeTitle: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: colors.success
+  },
+  noFeeNoticeText: {
+    marginTop: 6,
+    fontSize: 13,
+    lineHeight: 19,
+    color: colors.textSecondary
   },
   addCardButton: {
     marginTop: spacing.lg,
