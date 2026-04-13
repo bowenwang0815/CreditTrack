@@ -43,6 +43,7 @@ export interface TrackerCard {
   name: string;
   nickname?: string;
   last4?: string;
+  creditLimit?: number;
   annualFee: number;
   annualFeeDueDate: string;
   openDate?: string;
@@ -59,6 +60,7 @@ export interface TrackerCard {
 export interface AddCardPayload {
   templateId: string;
   last4?: string;
+  creditLimit?: number;
   openDate: string;
   annualFeeDueDate: string;
 }

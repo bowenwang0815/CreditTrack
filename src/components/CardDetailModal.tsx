@@ -52,6 +52,11 @@ export function CardDetailModal({
             <View>
               <Text style={styles.amount}>{formatCurrency(card.annualFee)}</Text>
               <Text style={styles.sectionMeta}>{formatDate(card.annualFeeDueDate)}</Text>
+              {typeof card.creditLimit === "number" ? (
+                <Text style={styles.sectionMeta}>
+                  Credit limit: {formatCurrency(card.creditLimit)}
+                </Text>
+              ) : null}
             </View>
             <Pill label={annualFeeCountdown(card.annualFeeDueDate)} tone="warning" />
           </View>

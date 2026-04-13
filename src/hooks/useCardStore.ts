@@ -63,6 +63,7 @@ export function useCardStore() {
       ...template,
       id: makeLocalId("card"),
       last4: payload.last4?.trim() ? payload.last4.trim().slice(0, 4) : template.last4,
+      creditLimit: typeof payload.creditLimit === "number" ? payload.creditLimit : template.creditLimit,
       openDate: payload.openDate,
       annualFeeDueDate: payload.annualFeeDueDate,
       earningRules: template.earningRules.map((rule) => ({

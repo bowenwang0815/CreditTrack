@@ -5,12 +5,14 @@ import { cardTemplates } from "../data/sampleCards";
 import { colors, spacing } from "../theme";
 import { AddCardPayload } from "../types";
 
-function normalizeDateInput(value: string) {
-  const candidate = new Date(value);
-  if (Number.isNaN(candidate.getTime())) {
-    return new Date().toISOString();
-  }
-  return candidate.toISOString();
+const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+function buildDateIso(year: number, monthIndex: number, day: number) {
+  return new Date(Date.UTC(year, monthIndex, day, 12, 0, 0)).toISOString();
+}
+
+function getDaysInMonth(year: number, monthIndex: number) {
+  return new Date(year, monthIndex + 1, 0).getDate();
 }
 
 export function AddCardModal({
@@ -29,8 +31,20 @@ export function AddCardModal({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTemplateId, setSelectedTemplateId] = useState("");
   const [last4, setLast4] = useState("");
-  const [openDate, setOpenDate] = useState(new Date().toISOString().slice(0, 10));
-  const [annualFeeDueDate, setAnnualFeeDueDate] = useState(new Date().toISOString().slice(0, 10));
+  const [creditLimit, setCreditLimit] = useState("");
+  const [approvedMonthIndex, setApprovedMonthIndex] = useState(new Date().getMonth());
+  const [approvedDay, setApprovedDay] = useState(new Date().getDate());
+  const [approvedYear, setApprovedYear] = useState(new Date().getFullYear());
+
+  const yearOptions = useMemo(() => {
+    const currentYear = new Date().getFullYear();
+    return Array.from({ length: 21 }, (_, index) => currentYear - 15 + index);
+  }, []);
+
+  const dayOptions = useMemo(
+    () => Array.from({ length: getDaysInMonth(approvedYear, approvedMonthIndex) }, (_, index) => index + 1),
+    [approvedMonthIndex, approvedYear]
+  );
 
   const visibleTemplates = useMemo(
     () => {
@@ -83,6 +97,13 @@ export function AddCardModal({
     }
   }, [selectedTemplateId, visibleTemplates]);
 
+  useEffect(() => {
+    const maxDay = getDaysInMonth(approvedYear, approvedMonthIndex);
+    if (approvedDay > maxDay) {
+      setApprovedDay(maxDay);
+    }
+  }, [approvedDay, approvedMonthIndex, approvedYear]);
+
   return (
     <View style={styles.screen}>
       <View style={styles.topBar}>
@@ -97,11 +118,14 @@ export function AddCardModal({
               return;
             }
 
+            const approvedDateIso = buildDateIso(approvedYear, approvedMonthIndex, approvedDay);
+
             onSave({
               templateId: selectedTemplateId,
               last4,
-              openDate: normalizeDateInput(openDate),
-              annualFeeDueDate: normalizeDateInput(annualFeeDueDate)
+              creditLimit: creditLimit.trim() ? Number(creditLimit.replace(/[^0-9]/g, "")) || undefined : undefined,
+              openDate: approvedDateIso,
+              annualFeeDueDate: approvedDateIso
             });
           }}
         >
@@ -199,20 +223,84 @@ export function AddCardModal({
             style={styles.input}
           />
 
-          <Text style={styles.fieldLabel}>Open date</Text>
-          <TextInput
-            value={openDate}
-            onChangeText={setOpenDate}
-            placeholder="YYYY-MM-DD"
-            placeholderTextColor="#9CA3AF"
-            style={styles.input}
-          />
+          <Text style={styles.fieldLabel}>Approved date</Text>
+          <View style={styles.dateSummaryCard}>
+            <Text style={styles.dateSummaryText}>
+              {monthLabels[approvedMonthIndex]} {approvedDay}, {approvedYear}
+            </Text>
+            <Text style={styles.dateSummaryHint}>
+              Annual fee due date will match this approved date each year.
+            </Text>
+          </View>
 
-          <Text style={styles.fieldLabel}>Annual fee due date</Text>
+          <View style={styles.dateWheelRow}>
+            <View style={styles.dateWheelColumn}>
+              <Text style={styles.wheelLabel}>Month</Text>
+              <ScrollView showsVerticalScrollIndicator={false} style={styles.wheelList}>
+                {monthLabels.map((month, index) => {
+                  const isSelected = approvedMonthIndex === index;
+                  return (
+                    <Pressable
+                      key={month}
+                      onPress={() => setApprovedMonthIndex(index)}
+                      style={[styles.wheelItem, isSelected && styles.wheelItemSelected]}
+                    >
+                      <Text style={[styles.wheelItemText, isSelected && styles.wheelItemTextSelected]}>
+                        {month}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </ScrollView>
+            </View>
+
+            <View style={styles.dateWheelColumn}>
+              <Text style={styles.wheelLabel}>Day</Text>
+              <ScrollView showsVerticalScrollIndicator={false} style={styles.wheelList}>
+                {dayOptions.map((day) => {
+                  const isSelected = approvedDay === day;
+                  return (
+                    <Pressable
+                      key={day}
+                      onPress={() => setApprovedDay(day)}
+                      style={[styles.wheelItem, isSelected && styles.wheelItemSelected]}
+                    >
+                      <Text style={[styles.wheelItemText, isSelected && styles.wheelItemTextSelected]}>
+                        {day}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </ScrollView>
+            </View>
+
+            <View style={styles.dateWheelColumn}>
+              <Text style={styles.wheelLabel}>Year</Text>
+              <ScrollView showsVerticalScrollIndicator={false} style={styles.wheelList}>
+                {yearOptions.map((year) => {
+                  const isSelected = approvedYear === year;
+                  return (
+                    <Pressable
+                      key={year}
+                      onPress={() => setApprovedYear(year)}
+                      style={[styles.wheelItem, isSelected && styles.wheelItemSelected]}
+                    >
+                      <Text style={[styles.wheelItemText, isSelected && styles.wheelItemTextSelected]}>
+                        {year}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </ScrollView>
+            </View>
+          </View>
+
+          <Text style={styles.fieldLabel}>Credit limit (optional)</Text>
           <TextInput
-            value={annualFeeDueDate}
-            onChangeText={setAnnualFeeDueDate}
-            placeholder="YYYY-MM-DD"
+            value={creditLimit}
+            onChangeText={setCreditLimit}
+            keyboardType="number-pad"
+            placeholder="$10,000"
             placeholderTextColor="#9CA3AF"
             style={styles.input}
           />
@@ -367,6 +455,62 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     fontSize: 15,
     color: colors.textPrimary
+  },
+  dateSummaryCard: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    backgroundColor: "#FFFFFF"
+  },
+  dateSummaryText: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: colors.textPrimary
+  },
+  dateSummaryHint: {
+    marginTop: 6,
+    fontSize: 12,
+    lineHeight: 18,
+    color: colors.textSecondary
+  },
+  dateWheelRow: {
+    flexDirection: "row",
+    gap: 12,
+    marginTop: 12
+  },
+  dateWheelColumn: {
+    flex: 1
+  },
+  wheelLabel: {
+    marginBottom: 8,
+    fontSize: 12,
+    fontWeight: "700",
+    color: colors.textSecondary
+  },
+  wheelList: {
+    maxHeight: 190,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 16,
+    backgroundColor: "#FFFFFF"
+  },
+  wheelItem: {
+    paddingHorizontal: 12,
+    paddingVertical: 12
+  },
+  wheelItemSelected: {
+    backgroundColor: colors.blueSoft
+  },
+  wheelItemText: {
+    textAlign: "center",
+    fontSize: 14,
+    fontWeight: "600",
+    color: colors.textSecondary
+  },
+  wheelItemTextSelected: {
+    color: colors.primary
   },
   searchInput: {
     marginTop: 14
