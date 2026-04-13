@@ -1,4 +1,4 @@
-import { Feather } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import React from "react";
 import { Pressable, StyleSheet, Text, View, useWindowDimensions } from "react-native";
 import { colors, spacing } from "../theme";
@@ -16,30 +16,30 @@ import {
 } from "../utils/cardHelpers";
 import { CardThumbnail } from "./CardThumbnail";
 
-function iconForCategory(category: string): keyof typeof Feather.glyphMap {
+function iconForCategory(category: string): keyof typeof MaterialIcons.glyphMap {
   switch (category) {
     case "dining":
-      return "coffee";
+      return "restaurant";
     case "grocery":
-      return "shopping-cart";
+      return "local-grocery-store";
     case "gas":
-      return "truck";
+      return "local-gas-station";
     case "travel":
-      return "map-pin";
+      return "flight";
     case "flights":
-      return "send";
+      return "flight";
     case "hotels":
-      return "home";
+      return "hotel";
     case "transit":
-      return "truck";
+      return "directions-transit";
     case "drugstores":
-      return "heart";
+      return "local-pharmacy";
     case "online_shopping":
-      return "monitor";
+      return "shopping-bag";
     case "streaming":
-      return "play";
+      return "play-circle-outline";
     case "mobile_wallet":
-      return "smartphone";
+      return "account-balance-wallet";
     default:
       return "star";
   }
@@ -130,7 +130,7 @@ export function CardListItem({
             <View style={[styles.multiplierRow, isCompact && styles.multiplierRowCompact]}>
               {topRules.map((rule) => (
                 <View key={rule.id} style={styles.multiplierItem}>
-                  <Feather
+                  <MaterialIcons
                     color={colors.icon}
                     name={iconForCategory(rule.category)}
                     size={isCompact ? 20 : 24}
