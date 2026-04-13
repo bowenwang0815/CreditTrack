@@ -35,6 +35,17 @@ export interface Benefit {
   amountTotalThisPeriod: number;
   isUsed: boolean;
   reminderDaysBefore: number;
+  usageHistory?: BenefitUsageEntry[];
+  currentPeriodKey?: string;
+  currentPeriodLabel?: string;
+}
+
+export interface BenefitUsageEntry {
+  id: string;
+  periodKey: string;
+  periodLabel: string;
+  amountUsed: number;
+  updatedAt: string;
 }
 
 export interface TrackerCard {

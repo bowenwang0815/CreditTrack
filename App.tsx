@@ -44,6 +44,7 @@ export default function App() {
     addCardFromTemplate,
     markBenefitUsed,
     resetBenefit,
+    updateBenefitUsage,
     deleteCard,
     resetAllCards
   } = useCardStore();
@@ -165,6 +166,7 @@ export default function App() {
                 cards={activeCards}
                 onMarkBenefitUsed={markBenefitUsed}
                 onResetBenefit={resetBenefit}
+                onUpdateBenefitUsage={updateBenefitUsage}
               />
             ) : null}
 

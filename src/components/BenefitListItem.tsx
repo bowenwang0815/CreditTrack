@@ -9,11 +9,13 @@ import { CardThumbnail } from "./CardThumbnail";
 export function BenefitListItem({
   benefit,
   card,
+  onPress,
   onMarkUsed,
   onReset
 }: {
   benefit: Benefit;
   card: TrackerCard;
+  onPress: () => void;
   onMarkUsed: () => void;
   onReset: () => void;
 }) {
@@ -24,7 +26,7 @@ export function BenefitListItem({
       : 0;
 
   return (
-    <View style={styles.card}>
+    <Pressable onPress={onPress} style={styles.card}>
       <View style={styles.header}>
         <CardThumbnail card={card} compact />
 
@@ -55,7 +57,14 @@ export function BenefitListItem({
 
       <View style={styles.actionRow}>
         <Pressable
-          onPress={benefit.isUsed ? onReset : onMarkUsed}
+          onPress={(event) => {
+            event.stopPropagation();
+            if (benefit.isUsed) {
+              onReset();
+              return;
+            }
+            onMarkUsed();
+          }}
           style={[styles.actionButton, benefit.isUsed && styles.actionButtonSecondary]}
         >
           <Text style={[styles.actionText, benefit.isUsed && styles.actionTextSecondary]}>
@@ -63,7 +72,7 @@ export function BenefitListItem({
           </Text>
         </Pressable>
       </View>
-    </View>
+    </Pressable>
   );
 }
 

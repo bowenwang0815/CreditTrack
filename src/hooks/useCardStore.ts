@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { cardTemplates } from "../data/sampleCards";
 import { AddCardPayload, Benefit, TrackerCard } from "../types";
+import { buildUpdatedBenefitUsage, normalizeBenefitState } from "../utils/benefits";
 
 const STORAGE_KEY = "cardpilot.cards.v1";
 
@@ -53,13 +54,16 @@ function mergeStoredCardWithTemplate(card: TrackerCard): TrackerCard {
     benefits: template.benefits.map((benefit) => {
       const existing = existingBenefitsByName.get(normalizeText(benefit.name));
 
-      return {
+      return normalizeBenefitState({
         ...benefit,
         id: existing?.id ?? makeLocalId("benefit"),
+        usageHistory: existing?.usageHistory,
+        currentPeriodKey: existing?.currentPeriodKey,
+        currentPeriodLabel: existing?.currentPeriodLabel,
         lastUsedDate: existing?.lastUsedDate,
         amountUsedThisPeriod: existing?.amountUsedThisPeriod ?? 0,
         isUsed: existing?.isUsed ?? false
-      };
+      });
     })
   };
 }
@@ -127,11 +131,14 @@ export function useCardStore() {
         id: makeLocalId("rule")
       })),
       benefits: template.benefits.map((benefit) => ({
-        ...benefit,
-        id: makeLocalId("benefit"),
-        amountUsedThisPeriod: 0,
-        isUsed: false,
-        lastUsedDate: undefined
+        ...normalizeBenefitState({
+          ...benefit,
+          id: makeLocalId("benefit"),
+          amountUsedThisPeriod: 0,
+          isUsed: false,
+          lastUsedDate: undefined,
+          usageHistory: []
+        })
       }))
     };
 
@@ -154,21 +161,17 @@ export function useCardStore() {
   }
 
   function markBenefitUsed(cardId: string, benefitId: string) {
-    updateBenefit(cardId, benefitId, (benefit) => ({
-      ...benefit,
-      isUsed: true,
-      lastUsedDate: new Date().toISOString(),
-      amountUsedThisPeriod: benefit.amountTotalThisPeriod
-    }));
+    updateBenefit(cardId, benefitId, (benefit) =>
+      buildUpdatedBenefitUsage(benefit, benefit.amountTotalThisPeriod)
+    );
   }
 
   function resetBenefit(cardId: string, benefitId: string) {
-    updateBenefit(cardId, benefitId, (benefit) => ({
-      ...benefit,
-      isUsed: false,
-      lastUsedDate: undefined,
-      amountUsedThisPeriod: 0
-    }));
+    updateBenefit(cardId, benefitId, (benefit) => buildUpdatedBenefitUsage(benefit, 0));
+  }
+
+  function updateBenefitUsage(cardId: string, benefitId: string, amountUsed: number) {
+    updateBenefit(cardId, benefitId, (benefit) => buildUpdatedBenefitUsage(benefit, amountUsed));
   }
 
   function deleteCard(cardId: string) {
@@ -186,6 +189,7 @@ export function useCardStore() {
     addCardFromTemplate,
     markBenefitUsed,
     resetBenefit,
+    updateBenefitUsage,
     deleteCard,
     resetAllCards
   };

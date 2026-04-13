@@ -4,6 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { colors, spacing } from "../theme";
 import { TrackerCard } from "../types";
 import { BenefitListItem } from "./BenefitListItem";
+import { BenefitUsageModal } from "./BenefitUsageModal";
 import { CardThumbnail } from "./CardThumbnail";
 
 type BenefitEntry = {
@@ -15,13 +16,16 @@ type BenefitEntry = {
 export function BenefitsView({
   cards,
   onMarkBenefitUsed,
-  onResetBenefit
+  onResetBenefit,
+  onUpdateBenefitUsage
 }: {
   cards: TrackerCard[];
   onMarkBenefitUsed: (cardId: string, benefitId: string) => void;
   onResetBenefit: (cardId: string, benefitId: string) => void;
+  onUpdateBenefitUsage: (cardId: string, benefitId: string, amountUsed: number) => void;
 }) {
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+  const [selectedBenefitKey, setSelectedBenefitKey] = useState<string | null>(null);
 
   const cardsWithBenefits = useMemo(
     () => cards.filter((card) => card.benefits.length > 0),
@@ -51,6 +55,14 @@ export function BenefitsView({
         return left.benefit.name.localeCompare(right.benefit.name);
       });
   }, [cardsWithBenefits, selectedCardId]);
+
+  const selectedBenefitEntry = useMemo(
+    () =>
+      benefitEntries.find(
+        (entry) => `${entry.card.id}:${entry.benefitId}` === selectedBenefitKey
+      ) ?? null,
+    [benefitEntries, selectedBenefitKey]
+  );
 
   return (
     <>
@@ -99,6 +111,7 @@ export function BenefitsView({
             key={entry.benefitId}
             benefit={entry.benefit}
             card={entry.card}
+            onPress={() => setSelectedBenefitKey(`${entry.card.id}:${entry.benefitId}`)}
             onMarkUsed={() => onMarkBenefitUsed(entry.card.id, entry.benefitId)}
             onReset={() => onResetBenefit(entry.card.id, entry.benefitId)}
           />
@@ -111,6 +124,21 @@ export function BenefitsView({
           </Text>
         </View>
       )}
+
+      {selectedBenefitEntry ? (
+        <BenefitUsageModal
+          benefit={selectedBenefitEntry.benefit}
+          card={selectedBenefitEntry.card}
+          onClose={() => setSelectedBenefitKey(null)}
+          onSave={(amountUsed) =>
+            onUpdateBenefitUsage(
+              selectedBenefitEntry.card.id,
+              selectedBenefitEntry.benefitId,
+              amountUsed
+            )
+          }
+        />
+      ) : null}
     </>
   );
 }
