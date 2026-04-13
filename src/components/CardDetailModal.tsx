@@ -3,7 +3,11 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { colors, spacing } from "../theme";
 import { TrackerCard } from "../types";
 import { getDisplayName, getSortedRules, getUnusedBenefitsCount } from "../utils/cardHelpers";
-import { annualFeeCountdown, formatCurrency, formatDate } from "../utils/date";
+import {
+  annualFeeCountdown,
+  formatAnnualFeeDueDate,
+  formatCurrency
+} from "../utils/date";
 import { CardThumbnail } from "./CardThumbnail";
 import { CategoryChip } from "./CategoryChip";
 import { Pill } from "./Pill";
@@ -51,14 +55,20 @@ export function CardDetailModal({
           <View style={styles.rowBetween}>
             <View>
               <Text style={styles.amount}>{formatCurrency(card.annualFee)}</Text>
-              <Text style={styles.sectionMeta}>{formatDate(card.annualFeeDueDate)}</Text>
+              <Text style={styles.sectionMeta}>
+                {card.annualFee > 0 ? `Next fee: ${formatAnnualFeeDueDate(card.annualFeeDueDate)}` : "No annual fee"}
+              </Text>
               {typeof card.creditLimit === "number" ? (
                 <Text style={styles.sectionMeta}>
                   Credit limit: {formatCurrency(card.creditLimit)}
                 </Text>
               ) : null}
             </View>
-            <Pill label={annualFeeCountdown(card.annualFeeDueDate)} tone="warning" />
+            {card.annualFee > 0 ? (
+              <Pill label={annualFeeCountdown(card.annualFeeDueDate)} tone="warning" />
+            ) : (
+              <Pill label="No fee" tone="success" />
+            )}
           </View>
         </View>
 

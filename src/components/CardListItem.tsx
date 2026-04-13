@@ -3,7 +3,12 @@ import React from "react";
 import { Pressable, StyleSheet, Text, View, useWindowDimensions } from "react-native";
 import { colors, spacing } from "../theme";
 import { TrackerCard } from "../types";
-import { annualFeeProgress, daysUntil, formatCurrency } from "../utils/date";
+import {
+  annualFeeProgress,
+  formatAnnualFeeDueDate,
+  formatCurrency,
+  getAnnualFeeStatus
+} from "../utils/date";
 import {
   getDisplayName,
   getKeyRules,
@@ -49,8 +54,9 @@ export function CardListItem({
 }) {
   const { width } = useWindowDimensions();
   const isCompact = width < 440;
-  const remainingDays = daysUntil(card.annualFeeDueDate);
-  const progress = annualFeeProgress(card.annualFeeDueDate);
+  const hasAnnualFee = card.annualFee > 0;
+  const feeStatus = hasAnnualFee ? getAnnualFeeStatus(card.annualFeeDueDate) : null;
+  const progress = hasAnnualFee ? annualFeeProgress(card.annualFeeDueDate) : 0;
   const topRules = getKeyRules(card).slice(0, isCompact ? 4 : 5);
 
   return (
@@ -70,18 +76,46 @@ export function CardListItem({
             </View>
           </View>
 
-          <View style={[styles.dueRow, isCompact && styles.dueRowCompact]}>
-            <Text style={[styles.supportingLabel, isCompact && styles.supportingLabelCompact]}>
-              Annual fee due
-            </Text>
-            <Text style={[styles.daysText, isCompact && styles.daysTextCompact]}>
-              {remainingDays <= 0 ? "Due now" : `${remainingDays} days remaining`}
-            </Text>
-          </View>
+          {hasAnnualFee ? (
+            <>
+              <View style={[styles.dueRow, isCompact && styles.dueRowCompact]}>
+                <Text style={[styles.supportingLabel, isCompact && styles.supportingLabelCompact]}>
+                  Next annual fee
+                </Text>
+                <Text
+                  style={[
+                    styles.daysText,
+                    isCompact && styles.daysTextCompact,
+                    feeStatus?.tone === "urgent" && styles.daysTextUrgent,
+                    feeStatus?.tone === "upcoming" && styles.daysTextUpcoming
+                  ]}
+                >
+                  {feeStatus?.label}
+                </Text>
+              </View>
 
-          <View style={[styles.progressTrack, isCompact && styles.progressTrackCompact]}>
-            <View style={[styles.progressFill, { width: `${Math.max(progress * 100, 4)}%` }]} />
-          </View>
+              <View style={[styles.progressTrack, isCompact && styles.progressTrackCompact]}>
+                <View
+                  style={[
+                    styles.progressFill,
+                    feeStatus?.tone === "urgent" && styles.progressFillUrgent,
+                    feeStatus?.tone === "upcoming" && styles.progressFillUpcoming,
+                    { width: `${Math.max(progress * 100, 4)}%` }
+                  ]}
+                />
+              </View>
+
+              <Text style={[styles.feeDateText, isCompact && styles.feeDateTextCompact]}>
+                {formatAnnualFeeDueDate(card.annualFeeDueDate)}
+              </Text>
+            </>
+          ) : (
+            <View style={[styles.noFeeBanner, isCompact && styles.noFeeBannerCompact]}>
+              <Text style={[styles.noFeeText, isCompact && styles.noFeeTextCompact]}>
+                No annual fee
+              </Text>
+            </View>
+          )}
 
           <View style={[styles.bottomRow, isCompact && styles.bottomRowCompact]}>
             <View style={styles.redeemedBlock}>
@@ -200,6 +234,12 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: colors.textPrimary
   },
+  daysTextUrgent: {
+    color: "#D92D20"
+  },
+  daysTextUpcoming: {
+    color: colors.warning
+  },
   daysTextCompact: {
     fontSize: 10,
     lineHeight: 12
@@ -219,6 +259,42 @@ const styles = StyleSheet.create({
     height: "100%",
     borderRadius: 999,
     backgroundColor: colors.primary
+  },
+  progressFillUrgent: {
+    backgroundColor: "#D92D20"
+  },
+  progressFillUpcoming: {
+    backgroundColor: colors.warning
+  },
+  feeDateText: {
+    marginTop: 6,
+    fontSize: 12,
+    color: colors.textSecondary
+  },
+  feeDateTextCompact: {
+    marginTop: 5,
+    fontSize: 10
+  },
+  noFeeBanner: {
+    marginTop: 10,
+    alignSelf: "flex-start",
+    backgroundColor: "#EAF7F0",
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 6
+  },
+  noFeeBannerCompact: {
+    marginTop: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 5
+  },
+  noFeeText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: colors.success
+  },
+  noFeeTextCompact: {
+    fontSize: 10
   },
   bottomRow: {
     flexDirection: "row",

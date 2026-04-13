@@ -2,7 +2,12 @@ import React, { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { colors, spacing } from "../theme";
 import { TrackerCard } from "../types";
-import { annualFeeCountdown, formatCurrency, formatDate } from "../utils/date";
+import {
+  annualFeeCountdown,
+  formatAnnualFeeDueDate,
+  formatCurrency,
+  getNextAnnualFeeDate
+} from "../utils/date";
 
 export function DashboardView({ cards }: { cards: TrackerCard[] }) {
   const activeCards = useMemo(() => cards.filter((card) => card.isActive), [cards]);
@@ -33,10 +38,13 @@ export function DashboardView({ cards }: { cards: TrackerCard[] }) {
   );
 
   const nextAnnualFeeCard = useMemo(() => {
-    return [...activeCards].sort(
-      (left, right) =>
-        new Date(left.annualFeeDueDate).getTime() - new Date(right.annualFeeDueDate).getTime()
-    )[0];
+    return [...activeCards]
+      .filter((card) => card.annualFee > 0)
+      .sort(
+        (left, right) =>
+          getNextAnnualFeeDate(left.annualFeeDueDate).getTime() -
+          getNextAnnualFeeDate(right.annualFeeDueDate).getTime()
+      )[0];
   }, [activeCards]);
 
   const recentlyClaimedBenefits = useMemo(() => {
@@ -92,7 +100,7 @@ export function DashboardView({ cards }: { cards: TrackerCard[] }) {
           <>
             <Text style={styles.sectionPrimary}>{nextAnnualFeeCard.name}</Text>
             <Text style={styles.sectionMeta}>
-              {formatCurrency(nextAnnualFeeCard.annualFee)} • {formatDate(nextAnnualFeeCard.annualFeeDueDate)}
+              {formatCurrency(nextAnnualFeeCard.annualFee)} • {formatAnnualFeeDueDate(nextAnnualFeeCard.annualFeeDueDate)}
             </Text>
             <Text style={styles.sectionAccent}>
               {annualFeeCountdown(nextAnnualFeeCard.annualFeeDueDate)}
