@@ -178,6 +178,24 @@ export function useCardStore() {
     setCards((current) => current.filter((card) => card.id !== cardId));
   }
 
+  function updateCard(
+    cardId: string,
+    updates: Partial<
+      Pick<TrackerCard, "nickname" | "last4" | "creditLimit" | "openDate" | "annualFeeDueDate">
+    >
+  ) {
+    setCards((current) =>
+      current.map((card) =>
+        card.id !== cardId
+          ? card
+          : {
+              ...card,
+              ...updates
+            }
+      )
+    );
+  }
+
   async function resetAllCards() {
     setCards([]);
     await AsyncStorage.removeItem(STORAGE_KEY).catch(() => undefined);
@@ -190,6 +208,7 @@ export function useCardStore() {
     markBenefitUsed,
     resetBenefit,
     updateBenefitUsage,
+    updateCard,
     deleteCard,
     resetAllCards
   };

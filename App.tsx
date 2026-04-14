@@ -45,6 +45,7 @@ export default function App() {
     markBenefitUsed,
     resetBenefit,
     updateBenefitUsage,
+    updateCard,
     deleteCard,
     resetAllCards
   } = useCardStore();
@@ -278,6 +279,7 @@ export default function App() {
               deleteCard(selectedCard.id);
               setSelectedCardId(null);
             }}
+            onUpdateCard={(updates) => updateCard(selectedCard.id, updates)}
             onMarkBenefitUsed={(benefitId) => markBenefitUsed(selectedCard.id, benefitId)}
             onResetBenefit={(benefitId) => resetBenefit(selectedCard.id, benefitId)}
           />
