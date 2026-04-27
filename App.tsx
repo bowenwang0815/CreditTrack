@@ -22,6 +22,8 @@ import { useCardStore } from "./src/hooks/useCardStore";
 import { TabKey } from "./src/types";
 import { colors, spacing } from "./src/theme";
 
+type CardSortKey = "name" | "issuer";
+
 export default function App() {
   const { width } = useWindowDimensions();
   const isCompact = width < 440;
@@ -40,16 +42,26 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<TabKey>("dashboard");
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isCardSortOpen, setIsCardSortOpen] = useState(false);
+  const [cardSortKey, setCardSortKey] = useState<CardSortKey>("name");
 
   const activeCards = useMemo(
     () =>
       [...cards].sort((left, right) => {
-        if (left.isActive === right.isActive) {
-          return left.name.localeCompare(right.name);
+        if (left.isActive !== right.isActive) {
+          return left.isActive ? -1 : 1;
         }
-        return left.isActive ? -1 : 1;
+
+        if (cardSortKey === "issuer") {
+          const issuerCompare = left.issuer.localeCompare(right.issuer);
+          if (issuerCompare !== 0) {
+            return issuerCompare;
+          }
+        }
+
+        return left.name.localeCompare(right.name);
       }),
-    [cards]
+    [cards, cardSortKey]
   );
 
   const selectedCard = useMemo(
@@ -69,7 +81,10 @@ export default function App() {
             <View style={styles.cardsHeaderActions}>
               <Pressable
                 accessibilityRole="button"
-                onPress={() => console.log("[CardsHeader] menu pressed")}
+                onPress={() => {
+                  console.log("[CardsHeader] menu pressed");
+                  setIsCardSortOpen(true);
+                }}
                 style={[styles.iconButtonGhost, isCompact && styles.iconButtonGhostCompact]}
               >
                 <Feather color={colors.icon} name="menu" size={isCompact ? 24 : 28} />
@@ -233,6 +248,58 @@ export default function App() {
             setIsAddModalOpen(false);
           }}
         />
+      </Modal>
+
+      <Modal
+        animationType="fade"
+        transparent
+        visible={isCardSortOpen}
+        onRequestClose={() => setIsCardSortOpen(false)}
+      >
+        <View style={styles.sortOverlay}>
+          <Pressable style={styles.sortBackdrop} onPress={() => setIsCardSortOpen(false)} />
+          <View style={styles.sortSheet}>
+            <View style={styles.sortSheetHandle} />
+            <Text style={styles.sortSheetTitle}>Sort cards</Text>
+            <Text style={styles.sortSheetSubtitle}>
+              Choose how your wallet list is ordered.
+            </Text>
+
+            {[
+              ["name", "Name", "A to Z by card name"],
+              ["issuer", "Issuer", "Group by bank, then card name"]
+            ].map(([key, label, description]) => {
+              const isSelected = cardSortKey === key;
+              return (
+                <Pressable
+                  key={key}
+                  onPress={() => {
+                    setCardSortKey(key as CardSortKey);
+                    setIsCardSortOpen(false);
+                  }}
+                  style={[styles.sortSheetOption, isSelected && styles.sortSheetOptionSelected]}
+                >
+                  <View style={styles.sortSheetOptionText}>
+                    <Text
+                      style={[
+                        styles.sortSheetOptionTitle,
+                        isSelected && styles.sortSheetOptionTitleSelected
+                      ]}
+                    >
+                      {label}
+                    </Text>
+                    <Text style={styles.sortSheetOptionDescription}>{description}</Text>
+                  </View>
+                  {isSelected ? (
+                    <Feather color={colors.primary} name="check-circle" size={22} />
+                  ) : (
+                    <Feather color={colors.icon} name="circle" size={22} />
+                  )}
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
       </Modal>
 
       <Modal
@@ -464,5 +531,78 @@ const styles = StyleSheet.create({
   },
   bottomTabTextActive: {
     color: colors.primary
+  },
+  sortOverlay: {
+    flex: 1,
+    justifyContent: "flex-end",
+    backgroundColor: "rgba(10, 19, 40, 0.24)"
+  },
+  sortBackdrop: {
+    ...StyleSheet.absoluteFillObject
+  },
+  sortSheet: {
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    paddingHorizontal: spacing.lg,
+    paddingTop: 10,
+    paddingBottom: 34,
+    shadowColor: "#0A1328",
+    shadowOpacity: 0.18,
+    shadowRadius: 24,
+    shadowOffset: { width: 0, height: -10 },
+    elevation: 12
+  },
+  sortSheetHandle: {
+    alignSelf: "center",
+    width: 46,
+    height: 5,
+    borderRadius: 999,
+    backgroundColor: "#D6DDEB",
+    marginBottom: 18
+  },
+  sortSheetTitle: {
+    fontSize: 22,
+    fontWeight: "800",
+    color: colors.textPrimary
+  },
+  sortSheetSubtitle: {
+    marginTop: 6,
+    fontSize: 14,
+    lineHeight: 20,
+    color: colors.textSecondary
+  },
+  sortSheetOption: {
+    marginTop: 14,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#E7ECF5",
+    backgroundColor: "#FFFFFF",
+    padding: 16,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: 14
+  },
+  sortSheetOptionSelected: {
+    borderColor: "#BFD0FF",
+    backgroundColor: "#F0F5FF"
+  },
+  sortSheetOptionText: {
+    flex: 1
+  },
+  sortSheetOptionTitle: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: colors.textPrimary
+  },
+  sortSheetOptionTitleSelected: {
+    color: colors.primary
+  },
+  sortSheetOptionDescription: {
+    marginTop: 5,
+    fontSize: 13,
+    lineHeight: 18,
+    color: colors.textSecondary
   }
 });
