@@ -13,27 +13,14 @@ import {
 } from "react-native";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { AddCardModal } from "./src/components/AddCardModal";
+import { BestCardsView } from "./src/components/BestCardsView";
 import { BenefitsView } from "./src/components/BenefitsView";
 import { CardDetailModal } from "./src/components/CardDetailModal";
 import { CardListItem } from "./src/components/CardListItem";
-import { BestCardRow } from "./src/components/BestCardRow";
 import { DashboardView } from "./src/components/DashboardView";
 import { useCardStore } from "./src/hooks/useCardStore";
-import { SpendingCategory, TabKey } from "./src/types";
+import { TabKey } from "./src/types";
 import { colors, spacing } from "./src/theme";
-import { getBestCardForCategory } from "./src/utils/bestCard";
-
-const recommendationCategories: SpendingCategory[] = [
-  "dining",
-  "grocery",
-  "gas",
-  "travel",
-  "flights",
-  "hotels",
-  "drugstores",
-  "transit",
-  "everything_else"
-];
 
 export default function App() {
   const { width } = useWindowDimensions();
@@ -53,15 +40,6 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<TabKey>("dashboard");
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
-  const recommendations = useMemo(
-    () =>
-      recommendationCategories.map((category) => ({
-        category,
-        recommendation: getBestCardForCategory(cards, category)
-      })),
-    [cards]
-  );
 
   const activeCards = useMemo(
     () =>
@@ -151,15 +129,7 @@ export default function App() {
             ) : null}
 
             {activeTab === "best" ? (
-              <>
-                {recommendations.map(({ category, recommendation }) => (
-                  <BestCardRow
-                    key={category}
-                    category={category}
-                    recommendation={recommendation}
-                  />
-                ))}
-              </>
+              <BestCardsView cards={activeCards} />
             ) : null}
 
             {activeTab === "benefits" ? (
