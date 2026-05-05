@@ -181,8 +181,8 @@ export function DashboardView({ cards }: { cards: TrackerCard[] }) {
         )} left in ${largestUnusedBenefit.benefit.name}.`,
         footer: `${largestUnusedBenefit.benefit.type} credit still open`,
         icon: "bolt",
-        bubbleColor: "#DCE8FF",
-        panelColor: "#EEF4FF",
+        bubbleColor: "rgba(59, 130, 246, 0.15)",
+        panelColor: colors.surface,
         accentColor: colors.primary
       });
     }
@@ -194,8 +194,8 @@ export function DashboardView({ cards }: { cards: TrackerCard[] }) {
         body: `Use ${getDisplayName(bestDining.card)} for ${bestDining.multiplier}x on dining.`,
         footer: "Best live dining card in your wallet",
         icon: "restaurant",
-        bubbleColor: "#DBF8EA",
-        panelColor: "#EFFBF5",
+        bubbleColor: "rgba(34, 197, 94, 0.15)",
+        panelColor: colors.surface,
         accentColor: colors.success
       });
     }
@@ -207,9 +207,9 @@ export function DashboardView({ cards }: { cards: TrackerCard[] }) {
         body: `${getDisplayName(bestTravel.card)} is your strongest everyday travel pick at ${bestTravel.multiplier}x.`,
         footer: "Use this for flights, hotels, and transit where it fits",
         icon: "flight-takeoff",
-        bubbleColor: "#E9E5FF",
-        panelColor: "#F5F2FF",
-        accentColor: "#6B4EF6"
+        bubbleColor: "rgba(107, 78, 246, 0.15)",
+        panelColor: colors.surface,
+        accentColor: "#8B5CF6"
       });
     }
 
@@ -220,8 +220,8 @@ export function DashboardView({ cards }: { cards: TrackerCard[] }) {
         body: `${getDisplayName(bestGrocery.card)} is earning ${bestGrocery.multiplier}x at the grocery store.`,
         footer: "Use this for your regular market runs",
         icon: "shopping-basket",
-        bubbleColor: "#FFF0D9",
-        panelColor: "#FFF8EC",
+        bubbleColor: "rgba(245, 158, 11, 0.15)",
+        panelColor: colors.surface,
         accentColor: colors.warning
       });
     }
@@ -468,7 +468,7 @@ const styles = StyleSheet.create({
     position: "relative",
     overflow: "hidden",
     borderRadius: 32,
-    backgroundColor: "#0D1736",
+    backgroundColor: colors.surface,
     padding: 24,
     shadowColor: "#081126",
     shadowOpacity: 0.26,
@@ -499,7 +499,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     textTransform: "uppercase",
     letterSpacing: 1,
-    color: "#93AEFF"
+    color: colors.textSecondary
   },
   heroTopRow: {
     marginTop: 14,
@@ -518,18 +518,18 @@ const styles = StyleSheet.create({
   heroKicker: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#DDE7FF"
+    color: colors.textPrimary
   },
   heroAmount: {
     fontSize: 42,
     fontWeight: "800",
-    color: "#FFFFFF"
+    color: colors.textPrimary
   },
   heroBody: {
     maxWidth: 340,
     fontSize: 14,
     lineHeight: 21,
-    color: "#DDE7FF"
+    color: colors.textSecondary
   },
   heroStatStack: {
     gap: 10,
@@ -548,13 +548,13 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 0.8,
-    color: "#AFC0F4"
+    color: colors.textSecondary
   },
   heroStatValue: {
     marginTop: 6,
     fontSize: 18,
     fontWeight: "800",
-    color: "#FFFFFF"
+    color: colors.textPrimary
   },
   heroAlert: {
     marginTop: 20,
@@ -572,7 +572,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 13,
     lineHeight: 19,
-    color: "#E6EEFF"
+    color: colors.textSecondary
   },
   metricStack: {
     gap: 14
@@ -583,7 +583,7 @@ const styles = StyleSheet.create({
   },
   metricCard: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.surface,
     borderRadius: 24,
     padding: 18,
     shadowColor: "#B8C7E2",
@@ -614,7 +614,7 @@ const styles = StyleSheet.create({
   splitValueCard: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.surface,
     borderRadius: 28,
     padding: 20,
     shadowColor: "#B8C7E2",
@@ -653,7 +653,7 @@ const styles = StyleSheet.create({
     width: 1,
     height: 44,
     marginHorizontal: 18,
-    backgroundColor: "#E7ECF5"
+    backgroundColor: colors.border
   },
   splitDividerCompact: {
     width: "100%",
@@ -711,7 +711,7 @@ const styles = StyleSheet.create({
   },
   renewalCard: {
     borderRadius: 28,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.surface,
     padding: 20,
     shadowColor: "#B8C7E2",
     shadowOpacity: 0.12,
@@ -750,10 +750,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10
   },
   renewalBadgeUrgent: {
-    backgroundColor: "#FFF0E6"
+    backgroundColor: "rgba(245, 158, 11, 0.15)"
   },
   renewalBadgeCalm: {
-    backgroundColor: "#EEF4FF"
+    backgroundColor: "rgba(59, 130, 246, 0.15)"
   },
   renewalBadgeText: {
     fontSize: 13,
@@ -794,7 +794,7 @@ const styles = StyleSheet.create({
     gap: 14
   },
   storyCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.surface,
     borderRadius: 28,
     padding: 20,
     shadowColor: "#B8C7E2",
@@ -804,11 +804,11 @@ const styles = StyleSheet.create({
     elevation: 3
   },
   playbookCard: {
-    backgroundColor: "#F1F5FF",
+    backgroundColor: colors.surface,
     borderRadius: 28,
     padding: 20,
     borderWidth: 1,
-    borderColor: "#DEE8FF"
+    borderColor: colors.border
   },
   storyTitle: {
     fontSize: 20,
@@ -855,7 +855,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    backgroundColor: "#F6F8FC",
+    backgroundColor: "rgba(255,255,255,0.05)",
     alignItems: "flex-end"
   },
   leaderBadgeValue: {
@@ -878,7 +878,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 12,
     borderRadius: 20,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.surface,
     paddingHorizontal: 14,
     paddingVertical: 14
   },
@@ -892,7 +892,7 @@ const styles = StyleSheet.create({
     width: 42,
     height: 42,
     borderRadius: 14,
-    backgroundColor: "#EEF4FF",
+    backgroundColor: "rgba(59, 130, 246, 0.15)",
     alignItems: "center",
     justifyContent: "center"
   },
@@ -911,7 +911,7 @@ const styles = StyleSheet.create({
   },
   multiplierBadge: {
     borderRadius: 999,
-    backgroundColor: "#E3ECFF",
+    backgroundColor: "rgba(59, 130, 246, 0.15)",
     paddingHorizontal: 14,
     paddingVertical: 9
   },

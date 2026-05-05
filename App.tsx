@@ -9,7 +9,8 @@ import {
   StyleSheet,
   Text,
   View,
-  useWindowDimensions
+  useWindowDimensions,
+  Platform
 } from "react-native";
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import { AddCardModal } from "./src/components/AddCardModal";
@@ -214,20 +215,22 @@ export default function App() {
                 }}
                 style={styles.bottomTabButton}
               >
-                <View style={styles.bottomTabPill}>
+                <View style={[styles.bottomTabPill, isActive && { backgroundColor: "rgba(255, 255, 255, 0.1)" }]}>
                   <Feather
                     color={isActive ? colors.primary : colors.icon}
                     name={iconName as keyof typeof Feather.glyphMap}
-                    size={23}
+                    size={20}
                   />
-                  <Text
-                    style={[
-                      styles.bottomTabText,
-                      isActive && styles.bottomTabTextActive
-                    ]}
-                  >
-                    {label}
-                  </Text>
+                  {isActive ? (
+                    <Text
+                      style={[
+                        styles.bottomTabText,
+                        isActive && styles.bottomTabTextActive
+                      ]}
+                    >
+                      {label}
+                    </Text>
+                  ) : null}
                 </View>
               </Pressable>
             );
@@ -498,21 +501,21 @@ const styles = StyleSheet.create({
   },
   bottomTabBar: {
     position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
+    left: spacing.lg,
+    right: spacing.lg,
+    bottom: spacing.xl,
     flexDirection: "row",
-    backgroundColor: "#FFFFFF",
-    borderTopWidth: 1,
-    borderTopColor: "#E4E8F1",
-    paddingHorizontal: 10,
-    paddingTop: 10,
-    paddingBottom: 22,
-    shadowColor: "#7B8BA8",
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: -2 },
-    elevation: 6
+    backgroundColor: "rgba(24, 24, 27, 0.75)",
+    borderRadius: 32,
+    paddingHorizontal: 8,
+    paddingTop: 8,
+    paddingBottom: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.25,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 10,
+    ...(Platform.OS === "web" ? { backdropFilter: "blur(16px)" } : {})
   },
   bottomTabButton: {
     flex: 1
@@ -520,17 +523,18 @@ const styles = StyleSheet.create({
   bottomTabPill: {
     alignItems: "center",
     justifyContent: "center",
-    gap: 6,
-    minHeight: 52
+    gap: 4,
+    height: 56,
+    borderRadius: 24
   },
   bottomTabText: {
     textAlign: "center",
-    fontSize: 11,
-    fontWeight: "700",
+    fontSize: 10,
+    fontWeight: "600",
     color: colors.icon
   },
   bottomTabTextActive: {
-    color: colors.primary
+    color: "#FFFFFF"
   },
   sortOverlay: {
     flex: 1,

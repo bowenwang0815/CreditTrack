@@ -407,7 +407,7 @@ const styles = StyleSheet.create({
     position: "relative",
     overflow: "hidden",
     borderRadius: 30,
-    backgroundColor: "#0D1736",
+    backgroundColor: colors.surface,
     padding: 24,
     shadowColor: "#081126",
     shadowOpacity: 0.24,
@@ -438,20 +438,20 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     textTransform: "uppercase",
     letterSpacing: 1,
-    color: "#93AEFF"
+    color: colors.textSecondary
   },
   heroTitle: {
     marginTop: 14,
     fontSize: 30,
     lineHeight: 34,
     fontWeight: "800",
-    color: "#FFFFFF"
+    color: colors.textPrimary
   },
   heroBody: {
     marginTop: 10,
     fontSize: 14,
     lineHeight: 21,
-    color: "#DDE7FF",
+    color: colors.textSecondary,
     maxWidth: 360
   },
   heroStatRow: {
@@ -473,13 +473,13 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 0.8,
-    color: "#AFC0F4"
+    color: colors.textSecondary
   },
   heroStatValue: {
     marginTop: 6,
     fontSize: 18,
     fontWeight: "800",
-    color: "#FFFFFF"
+    color: colors.textPrimary
   },
   sectionHeader: {
     marginTop: 2
@@ -498,7 +498,7 @@ const styles = StyleSheet.create({
     gap: 14
   },
   featuredCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.surface,
     borderRadius: 26,
     padding: 20,
     shadowColor: "#B8C7E2",
@@ -513,7 +513,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#EEF4FF"
+    backgroundColor: "rgba(59, 130, 246, 0.15)"
   },
   featuredLabel: {
     marginTop: 16,
@@ -553,7 +553,7 @@ const styles = StyleSheet.create({
     color: colors.textSecondary
   },
   listCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.surface,
     borderRadius: 26,
     paddingHorizontal: 20,
     shadowColor: "#B8C7E2",
@@ -565,7 +565,7 @@ const styles = StyleSheet.create({
   listRow: {
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#EEF2F7",
+    borderBottomColor: colors.border,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -584,7 +584,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 14,
-    backgroundColor: "#EEF4FF",
+    backgroundColor: "rgba(59, 130, 246, 0.15)",
     alignItems: "center",
     justifyContent: "center"
   },
@@ -603,7 +603,7 @@ const styles = StyleSheet.create({
   },
   multiplierBadge: {
     borderRadius: 999,
-    backgroundColor: "#E3ECFF",
+    backgroundColor: "rgba(59, 130, 246, 0.15)",
     paddingHorizontal: 12,
     paddingVertical: 8
   },
@@ -613,11 +613,11 @@ const styles = StyleSheet.create({
     color: colors.primary
   },
   askCard: {
-    backgroundColor: "#F1F5FF",
+    backgroundColor: colors.surface,
     borderRadius: 28,
     padding: 20,
     borderWidth: 1,
-    borderColor: "#DEE8FF"
+    borderColor: colors.border
   },
   askHeader: {
     flexDirection: "row",
@@ -639,7 +639,7 @@ const styles = StyleSheet.create({
   },
   askBetaPill: {
     borderRadius: 999,
-    backgroundColor: "#DBF8EA",
+    backgroundColor: "rgba(34, 197, 94, 0.15)",
     paddingHorizontal: 12,
     paddingVertical: 7
   },
@@ -657,9 +657,9 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     paddingHorizontal: 14,
     paddingVertical: 10,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: "#D9E4FF"
+    borderColor: colors.border
   },
   suggestionChipText: {
     fontSize: 13,
@@ -675,8 +675,8 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: "#D9E4FF",
-    backgroundColor: "#FFFFFF",
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 15,
@@ -692,13 +692,13 @@ const styles = StyleSheet.create({
   askButtonText: {
     fontSize: 14,
     fontWeight: "800",
-    color: "#FFFFFF"
+    color: colors.surface
   },
   replyCard: {
     marginTop: 16,
     borderRadius: 22,
     padding: 18,
-    backgroundColor: "#FFFFFF"
+    backgroundColor: colors.surface
   },
   replyTitle: {
     fontSize: 17,
@@ -718,7 +718,7 @@ const styles = StyleSheet.create({
     color: colors.primary
   },
   emptyCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.surface,
     borderRadius: 28,
     padding: 24
   },

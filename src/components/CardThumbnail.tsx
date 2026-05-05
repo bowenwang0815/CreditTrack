@@ -1,5 +1,6 @@
 import React from "react";
 import { Image, ImageSourcePropType, StyleSheet, Text, View } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { cardImageMap } from "../assets/cards";
 import { TrackerCard } from "../types";
 
@@ -104,8 +105,16 @@ export function CardThumbnail({
         />
       ) : (
         <>
-          <Text style={styles.issuer}>{card.issuer.toUpperCase()}</Text>
-          <Text style={styles.digits}>{card.last4 ? `•••• ${card.last4}` : "CARD"}</Text>
+          <LinearGradient
+            colors={["rgba(255,255,255,0.4)", "rgba(255,255,255,0)", "rgba(0,0,0,0.2)"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={StyleSheet.absoluteFill}
+          />
+          <View style={styles.fallbackContent}>
+            <Text style={styles.issuer}>{card.issuer.toUpperCase()}</Text>
+            <Text style={styles.digits}>{card.last4 ? `•••• ${card.last4}` : "CARD"}</Text>
+          </View>
         </>
       )}
     </View>
@@ -118,17 +127,32 @@ const styles = StyleSheet.create({
     overflow: "hidden"
   },
   containerFallback: {
-    padding: 8
+    // padding is moved to fallbackContent to allow absoluteFill gradient to cover full area
+  },
+  fallbackContent: {
+    flex: 1,
+    padding: 8,
+    justifyContent: "space-between"
   },
   containerRegular: {
     width: 108,
     height: 68,
-    borderRadius: 12
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4
   },
   containerCompact: {
     width: 90,
     height: 58,
-    borderRadius: 10
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 3
   },
   containerWithImage: {
     backgroundColor: "#FFFFFF",
@@ -140,13 +164,19 @@ const styles = StyleSheet.create({
     height: "100%"
   },
   issuer: {
-    color: "#FFFFFFCC",
+    color: "#FFFFFF",
     fontSize: 9,
-    fontWeight: "700"
+    fontWeight: "800",
+    textShadowColor: "rgba(0,0,0,0.3)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2
   },
   digits: {
     color: "#FFFFFF",
     fontSize: 11,
-    fontWeight: "700"
+    fontWeight: "800",
+    textShadowColor: "rgba(0,0,0,0.3)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2
   }
 });

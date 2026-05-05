@@ -200,10 +200,10 @@ const styles = StyleSheet.create({
     color: colors.textPrimary
   },
   filterChipTextSelected: {
-    color: "#FFFFFF"
+    color: colors.surface
   },
   emptyCard: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.surface,
     borderRadius: 24,
     padding: spacing.xl
   },

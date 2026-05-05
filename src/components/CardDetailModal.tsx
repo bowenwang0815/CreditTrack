@@ -478,7 +478,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.xxl,
+    paddingBottom: 100,
     gap: spacing.md
   },
   hero: {
@@ -643,7 +643,7 @@ const styles = StyleSheet.create({
   },
   sheetContent: {
     paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.xxl
+    paddingBottom: 100
   },
   sheetHero: {
     flexDirection: "row",
@@ -674,7 +674,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     borderWidth: 1,
     borderColor: colors.border,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.background,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
@@ -684,7 +684,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     borderRadius: 18,
     padding: 16,
-    backgroundColor: "#F4F7FC"
+    backgroundColor: colors.background
   },
   dateSummaryText: {
     fontSize: 16,
@@ -714,7 +714,7 @@ const styles = StyleSheet.create({
   wheelList: {
     maxHeight: 200,
     borderRadius: 18,
-    backgroundColor: "#F8FAFC",
+    backgroundColor: colors.background,
     borderWidth: 1,
     borderColor: colors.border
   },
@@ -738,7 +738,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
     borderRadius: 18,
     padding: 16,
-    backgroundColor: "#EEF7F2"
+    backgroundColor: "rgba(34, 197, 94, 0.15)"
   },
   noFeeNoticeTitle: {
     fontSize: 15,
@@ -790,7 +790,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderRadius: 14,
-    backgroundColor: "#EEF2F7"
+    backgroundColor: "rgba(255,255,255,0.1)"
   },
   confirmCancelText: {
     fontSize: 14,

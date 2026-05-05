@@ -400,7 +400,7 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.xxl,
+    paddingBottom: 100,
     gap: spacing.md
   },
   section: {
@@ -434,7 +434,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     paddingHorizontal: 14,
     paddingVertical: 9,
-    backgroundColor: "#FFFFFF"
+    backgroundColor: colors.surface
   },
   issuerPillSelected: {
     borderColor: colors.primary,
@@ -490,7 +490,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingHorizontal: 14,
     paddingVertical: 12,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.background,
     fontSize: 15,
     color: colors.textPrimary
   },
@@ -500,7 +500,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingHorizontal: 14,
     paddingVertical: 14,
-    backgroundColor: "#FFFFFF"
+    backgroundColor: colors.background
   },
   dateSummaryText: {
     fontSize: 16,
@@ -532,7 +532,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: 16,
-    backgroundColor: "#FFFFFF"
+    backgroundColor: colors.background
   },
   wheelItem: {
     paddingHorizontal: 12,
@@ -587,7 +587,7 @@ const styles = StyleSheet.create({
   },
   sheetContent: {
     paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.xxl
+    paddingBottom: 100
   },
   sheetHero: {
     flexDirection: "row",
@@ -614,7 +614,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
     padding: spacing.md,
     borderRadius: 16,
-    backgroundColor: "#EAF7F0"
+    backgroundColor: "rgba(34, 197, 94, 0.15)"
   },
   noFeeNoticeTitle: {
     fontSize: 14,
